@@ -20,9 +20,9 @@ module tb ();
   wire [7:0] uio_out;
   wire [7:0] uio_oe;
 
-  wire i_pwm;
-  wire i_clk;
-  wire i_aresetn;
+  reg i_pwm;
+  reg i_clk;
+  reg i_aresetn;
   wire [7:0] ui_in = {7'b0, i_pwm};
   wire o_dp_dc = uo_out[7];
   wire o_seg_dc = uo_out[6:0];
