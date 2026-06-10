@@ -21,12 +21,13 @@ module tb ();
   wire [7:0] uio_oe;
 
   reg i_pwm;
+  reg i_display_sel;
   reg i_clk;
   reg i_aresetn;
-  wire [7:0] ui_in = {7'b0, i_pwm};
-  wire o_dp_dc = uo_out[7];
-  wire o_seg_dc = uo_out[6:0];
-  wire o_digit_en_dc = uio_out[3:0];
+  wire [7:0] ui_in = {6'b0, i_display_sel, i_pwm};
+  wire o_dp = uo_out[7];
+  wire o_seg = uo_out[6:0];
+  wire o_digit_en = uio_out[3:0];
 
 `ifdef GL_TEST
   wire VPWR = 1'b1;
