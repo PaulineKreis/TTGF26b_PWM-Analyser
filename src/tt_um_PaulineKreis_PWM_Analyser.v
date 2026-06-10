@@ -30,7 +30,7 @@ module tt_um_PaulineKreis_PWM_Analyser (
     .i_aresetn(rst_n),
     .o_seg_dc(uo_out[6:0]),
     .o_dp_dc(uo_out[7]),
-    .o_digit_en_dc(uio_out[3:0]),
+    .o_digit_en_dc(uio_out[3:0])
     //.o_seg_freq(),
     //.o_dp_freq(),
     //.o_digit_en_freq()
