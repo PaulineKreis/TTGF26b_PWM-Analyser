@@ -221,8 +221,9 @@ async def setup(dut):
     """Start clock and apply reset."""
     cocotb.start_soon(Clock(dut.i_clk, CLK_PERIOD_NS, units="ns").start())
 
-    dut.i_aresetn.value = 0
-    dut.i_pwm.value     = 0
+    dut.i_aresetn.value     = 0
+    dut.i_pwm.value         = 0
+    dut.i_display_sel.value = 0
     await ClockCycles(dut.i_clk, 5)
 
     dut.i_aresetn.value = 1
@@ -248,10 +249,10 @@ async def test_reset_behaviour(dut):
 
     # Check outputs are not X/Z
     for sig, name in [
-        (dut.o_seg_freq,       "o_seg_freq"),
-        (dut.o_digit_en_freq,  "o_digit_en_freq"),
-        (dut.o_seg_dc,         "o_seg_dc"),
-        (dut.o_digit_en_dc,    "o_digit_en_dc"),
+        (dut.o_seg,       "o_seg_freq"),
+        (dut.o_digit_en,  "o_digit_en_freq"),
+        (dut.o_seg,         "o_seg_dc"),
+        (dut.o_digit_en,    "o_digit_en_dc"),
     ]:
         assert sig.value.is_resolvable, \
             f"{name} contains X/Z during reset: {sig.value}"
@@ -277,10 +278,14 @@ async def test_1khz_50pct(dut):
     # Let displays settle for one full rotation
     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
-    freq_chars = await read_display(dut, dut.o_seg_freq, dut.o_dp_freq,
-                                    dut.o_digit_en_freq, label="freq")
-    dc_chars   = await read_display(dut, dut.o_seg_dc, dut.o_dp_dc,
-                                    dut.o_digit_en_dc,   label="dc")
+    freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en, label="freq")
+
+    dut.i_display_sel.value = 1
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+    dc_chars   = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en,   label="dc")
+    dut.i_display_sel.value = 0
 
     freq_val = chars_to_number(freq_chars)
     dc_val   = chars_to_number(dc_chars)
@@ -311,10 +316,14 @@ async def test_10khz_25pct(dut):
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
-    freq_chars = await read_display(dut, dut.o_seg_freq, dut.o_dp_freq,
-                                    dut.o_digit_en_freq, label="freq")
-    dc_chars   = await read_display(dut, dut.o_seg_dc, dut.o_dp_dc,
-                                    dut.o_digit_en_dc,   label="dc")
+    freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en, label="freq")
+
+    dut.i_display_sel.value = 1
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+    dc_chars   = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en,   label="dc")
+    dut.i_display_sel.value = 0
 
     freq_val = chars_to_number(freq_chars)
     dc_val   = chars_to_number(dc_chars)
@@ -345,10 +354,14 @@ async def test_100khz_75pct(dut):
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
-    freq_chars = await read_display(dut, dut.o_seg_freq, dut.o_dp_freq,
-                                    dut.o_digit_en_freq, label="freq")
-    dc_chars   = await read_display(dut, dut.o_seg_dc, dut.o_dp_dc,
-                                    dut.o_digit_en_dc,   label="dc")
+    freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en, label="freq")
+
+    dut.i_display_sel.value = 1
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+    dc_chars   = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en,   label="dc")
+    dut.i_display_sel.value = 0
 
     freq_val = chars_to_number(freq_chars)
     dc_val   = chars_to_number(dc_chars)
@@ -377,10 +390,10 @@ async def test_dc_edge_cases(dut):
         await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
         for sig, name in [
-            (dut.o_seg_dc,        "o_seg_dc"),
-            (dut.o_digit_en_dc,   "o_digit_en_dc"),
-            (dut.o_seg_freq,      "o_seg_freq"),
-            (dut.o_digit_en_freq, "o_digit_en_freq"),
+            (dut.o_seg,        "o_seg_dc"),
+            (dut.o_digit_en,   "o_digit_en_dc"),
+            (dut.o_seg,      "o_seg_freq"),
+            (dut.o_digit_en, "o_digit_en_freq"),
         ]:
             assert sig.value.is_resolvable, \
                 f"{name} contains X/Z at {duty}% duty: {sig.value}"
@@ -410,8 +423,8 @@ async def test_status_hi(dut):
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
-    freq_chars = await read_display(dut, dut.o_seg_freq, dut.o_dp_freq,
-                                    dut.o_digit_en_freq, label="freq_hi")
+    freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en, label="freq_hi")
 
     dut._log.info(f"freq display chars: {freq_chars}")
 
@@ -439,8 +452,8 @@ async def test_status_lo(dut):
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
-    freq_chars = await read_display(dut, dut.o_seg_freq, dut.o_dp_freq,
-                                    dut.o_digit_en_freq, label="freq_hi")
+    freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en, label="freq_hi")
 
     dut._log.info(f"freq display chars: {freq_chars}")
 
@@ -470,8 +483,8 @@ async def test_pwm_removed(dut):
     # Wait long enough for freq_counter to detect signal loss
     await ClockCycles(dut.i_clk, 110_000_000)
 
-    freq_chars = await read_display(dut, dut.o_seg_freq, dut.o_dp_freq,
-                                    dut.o_digit_en_freq, label="freq_lo")
+    freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en, label="freq_lo")
 
     dut._log.info(f"freq display chars after PWM removed: {freq_chars}")
 
