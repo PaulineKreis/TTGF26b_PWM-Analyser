@@ -9,7 +9,7 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Explain how your project works (TODO)
+(TODO) Here we will explain how ower project works.
 
 ## How to test
 
@@ -17,4 +17,4 @@ Load cocotb onto...
 
 ## External hardware
 
-2x 4-digit 7-segment display with decimal point
+- 2x 4-digit 7-segment display with decimal point
