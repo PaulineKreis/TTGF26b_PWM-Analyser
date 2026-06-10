@@ -26,8 +26,8 @@ module tb ();
   reg i_aresetn;
   wire [7:0] ui_in = {6'b0, i_display_sel, i_pwm};
   wire o_dp = uo_out[7];
-  wire o_seg = uo_out[6:0];
-  wire o_digit_en = uio_out[3:0];
+  wire [6:0] o_seg = uo_out[6:0];
+  wire [3:0] o_digit_en = uio_out[3:0];
 
 `ifdef GL_TEST
   wire VPWR = 1'b1;
