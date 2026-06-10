@@ -5,7 +5,7 @@
 
 `default_nettype none
 
-module tt_um_example (
+module tt_um_PaulineKreis_PWM_Analyser (
     input  wire [7:0] ui_in,    // Dedicated inputs
     output wire [7:0] uo_out,   // Dedicated outputs
     input  wire [7:0] uio_in,   // IOs: Input path
@@ -19,9 +19,21 @@ module tt_um_example (
   // All output pins must be assigned. If not used, assign to 0.
   assign uo_out  = ui_in + uio_in;  // Example: ou_out is the sum of ui_in and uio_in
   assign uio_out = 0;
-  assign uio_oe  = 0;
+  assign uio_oe  = 1;
 
   // List all unused inputs to prevent warnings
   wire _unused = &{ena, clk, rst_n, 1'b0};
+
+  PWM_Analyser PWM_Analyser_inst (
+    .i_clk(clk),
+    .i_pwm(ui_in[0]),
+    .i_aresetn(rst_n),
+    .o_seg_dc(uo_out[6:0]),
+    .o_dp_dc(uo_out[7]),
+    .o_digit_en_dc(uio_out[3:0]),
+    //.o_seg_freq(),
+    //.o_dp_freq(),
+    //.o_digit_en_freq()
+  );
 
 endmodule
