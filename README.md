@@ -1,42 +1,49 @@
-![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
+# PWM Signal Analyzer with Dual 7-Segment Display
 
-# Tiny Tapeout Verilog Project Template
+## Overview
 
-- [Read the documentation for project](docs/info.md)
+This project implements a digital PWM (Pulse Width Modulation) signal analyzer in Verilog HDL.
 
-## What is Tiny Tapeout?
+The system measures:
+- the frequency of an incoming PWM signal
+- the duty cycle of the PWM signal
 
-Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital and analog designs manufactured on a real chip.
+The measured values are displayed on two independent 4-digit 7-segment displays:
+- one display for the PWM frequency
+- one display for the PWM duty cycle
 
-To learn more and get started, visit https://tinytapeout.com.
+The design is intended for ASIC-oriented digital design workflow and follows a modular hardware architecture.
 
-## Set up your Verilog project
+---
 
-1. Add your Verilog files to the `src` folder.
-2. Edit the [info.yaml](info.yaml) and update information about your project, paying special attention to the `source_files` and `top_module` properties. If you are upgrading an existing Tiny Tapeout project, check out our [online info.yaml migration tool](https://tinytapeout.github.io/tt-yaml-upgrade-tool/).
-3. Edit [docs/info.md](docs/info.md) and add a description of your project.
-4. Adapt the testbench to your design. See [test/README.md](test/README.md) for more information.
+## Features
 
-The GitHub action will automatically build the ASIC files using [LibreLane](https://www.zerotoasiccourse.com/terminology/librelane/).
+- Frequency measurement and display
+- Duty cycle measurement and display
+- Multiplexed control of two 4-digit 7-segment displays
+- Error indication for invalid or missing PWM signals
+- Support for common-anode and common-cathode displays
+- Modular Verilog HDL implementation
 
-## Enable GitHub actions to build the results page
+---
 
-- [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
+## Display Behavior
 
-## Resources
+### Frequency Display
+- Displays values from `1 kHz` to `9999 kHz`
+- Displays `Lo` if the frequency is below `1 kHz`
+- Displays `Hi` if the frequency exceeds `9999 kHz`
+- Displays `Err` if no PWM edge transition is detected for more than `50 ms`
 
-- [FAQ](https://tinytapeout.com/faq/)
-- [Digital design lessons](https://tinytapeout.com/digital_design/)
-- [Learn how semiconductors work](https://tinytapeout.com/siliwiz/)
-- [Join the community](https://tinytapeout.com/discord)
-- [Build your design locally](https://www.tinytapeout.com/guides/local-hardening/)
+### Duty Cycle Display
+- Displays values from `0.00` to `1.00`
+- Uses a fixed decimal point for fractional representation
 
-## What next?
+---
 
-- [Submit your design to the next shuttle](https://app.tinytapeout.com/).
-- Edit [this README](README.md) and explain your design, how it works, and how to test it.
-- Share your project on your social network of choice:
-  - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
-  - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
-  - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@tinytapeout](https://twitter.com/tinytapeout)
-  - Bluesky [@tinytapeout.com](https://bsky.app/profile/tinytapeout.com)
+## Project Structure
+
+```text
+/docs      Project documentation and specifications
+/src       Verilog HDL source files
+/tb        Testbenches and test documentation

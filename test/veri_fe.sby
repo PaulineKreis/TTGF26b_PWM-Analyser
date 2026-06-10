@@ -1,0 +1,18 @@
+[tasks]
+taskcover prove_cover
+taskbmc prove_bmc
+
+[options]
+prove_cover: mode cover
+prove_cover: depth 100
+prove_bmc: mode bmc
+
+[engines]
+smtbmc
+
+[files]
+../src/falling_edge_detect.v
+
+[script]
+read -formal falling_edge_detect.v 
+prep -top falling_edge_detect
