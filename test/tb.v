@@ -20,6 +20,7 @@ module tb ();
   wire [7:0] uio_out;
   wire [7:0] uio_oe;
 
+  wire i_pwm;
   wire i_clk;
   wire i_aresetn;
   wire [7:0] ui_in = {7'b0, i_pwm};
