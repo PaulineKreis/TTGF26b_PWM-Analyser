@@ -2,14 +2,12 @@ module PWM_Analyser (
     input wire i_clk,
     input wire i_pwm,
     input wire i_aresetn,
-    output wire [6:0] o_seg_dc,         // active segment pattern for current digit: {a,b,c,d,e,f,g}
-    output wire o_dp_dc,                // decimal point
-    output wire [3:0] o_digit_en_dc,     // digit enable for multiplexing four display digits
-    output wire [6:0] o_seg_freq,         // active segment pattern for current digit: {a,b,c,d,e,f,g}
-    output wire o_dp_freq,                // decimal point
-    output wire [3:0] o_digit_en_freq     // digit enable for multiplexing four display digits
+    input wire i_display_sel,        // 0 = frequency, 1 = duty cycle
+    output wire [6:0] o_seg,         // active segment pattern for current digit: {a,b,c,d,e,f,g}
+    output wire o_dp,                // decimal point
+    output wire [3:0] o_digit_en     // digit enable for multiplexing four display digits
 );
-    
+
     wire [13:0] w_freq_khz;
     wire [2:0] w_status_fc;
     wire [6:0] w_duty_cycle;
@@ -29,24 +27,18 @@ module PWM_Analyser (
         .o_duty_cycle(w_duty_cycle)
     );
 
-    SevenSegmentDecoder fc_disp(
-        .i_clk(i_clk),          
-        .i_aresetn(i_aresetn),      
-        .i_value(w_freq_khz), 
-        .i_status(w_status_fc), 
-        .o_seg(o_seg_freq),    
-        .o_dp(o_dp_freq),           
-        .o_digit_en(o_digit_en_freq)    
-    );
+    // Mux: select between frequency and duty cycle display
+    wire [13:0] w_value_muxed  = i_display_sel ? {7'b0, w_duty_cycle} : w_freq_khz;
+    wire [2:0] w_status_muxed = i_display_sel ? 3'b010 : w_status_fc;
 
-    SevenSegmentDecoder dc_disp(
-        .i_clk(i_clk),          
-        .i_aresetn(i_aresetn),      
-        .i_value(w_duty_cycle), 
-        .i_status(3'b010), 
-        .o_seg(o_seg_dc),    
-        .o_dp(o_dp_dc),           
-        .o_digit_en(o_digit_en_dc)    
+    SevenSegmentDecoder disp(
+        .i_clk(i_clk),
+        .i_aresetn(i_aresetn),
+        .i_value(w_value_muxed),
+        .i_status(w_status_muxed),
+        .o_seg(o_seg),
+        .o_dp(o_dp),
+        .o_digit_en(o_digit_en)
     );
 
 endmodule
