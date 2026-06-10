@@ -2,9 +2,9 @@
 Cocotb testbench for PWM_Analyser top-level module.
 
 DUT ports:
-    clk           - 100 MHz system clock
+    i_clk           - 100 MHz system clock
     i_pwm           - PWM input signal
-    rst_n       - Active-low asynchronous reset
+    i_aresetn       - Active-low asynchronous reset
 
     o_seg_dc        - 7-segment pattern for duty cycle display
     o_dp_dc         - Decimal point for duty cycle display
@@ -143,7 +143,7 @@ async def read_display(dut, seg_signal, dp_signal, digit_en_signal, label=""):
     timeout = DISPLAY_SETTLE_CYCLES * 2
 
     for _ in range(timeout):
-        await RisingEdge(dut.clk)
+        await RisingEdge(dut.i_clk)
         digit_en = digit_en_signal.value.integer
         seg      = seg_signal.value.integer
         inv_en   = (~digit_en) & 0xF
@@ -184,8 +184,8 @@ def chars_to_number(chars):
 
 async def drive_pwm(dut, freq_hz: int, duty_percent: float, num_periods: int):
     """
-    Drive ui_in[0] with a PWM signal of the given frequency and duty cycle
-    for num_periods complete periods.  Stimulus is aligned to negedge of clk.
+    Drive i_pwm with a PWM signal of the given frequency and duty cycle
+    for num_periods complete periods.  Stimulus is aligned to negedge of i_clk.
 
     freq_hz       - desired PWM frequency in Hz
     duty_percent  - duty cycle 0.0 – 100.0
@@ -203,14 +203,14 @@ async def drive_pwm(dut, freq_hz: int, duty_percent: float, num_periods: int):
         high_cycles = period_cycles - 1
 
     for _ in range(num_periods):
-        await FallingEdge(dut.clk)
-        dut.ui_in[0].value = 1
+        await FallingEdge(dut.i_clk)
+        dut.i_pwm.value = 1
         for _ in range(high_cycles - 1):
-            await FallingEdge(dut.clk)
-        await FallingEdge(dut.clk)
-        dut.ui_in[0].value = 0
+            await FallingEdge(dut.i_clk)
+        await FallingEdge(dut.i_clk)
+        dut.i_pwm.value = 0
         for _ in range(low_cycles - 1):
-            await FallingEdge(dut.clk)
+            await FallingEdge(dut.i_clk)
 
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -219,14 +219,14 @@ async def drive_pwm(dut, freq_hz: int, duty_percent: float, num_periods: int):
 
 async def setup(dut):
     """Start clock and apply reset."""
-    cocotb.start_soon(Clock(dut.clk, CLK_PERIOD_NS, units="ns").start())
+    cocotb.start_soon(Clock(dut.i_clk, CLK_PERIOD_NS, units="ns").start())
 
-    dut.rst_n.value = 0
-    dut.ui_in[0].value     = 0
-    await ClockCycles(dut.clk, 5)
+    dut.i_aresetn.value = 0
+    dut.i_pwm.value     = 0
+    await ClockCycles(dut.i_clk, 5)
 
-    dut.rst_n.value = 1
-    await ClockCycles(dut.clk, 5)
+    dut.i_aresetn.value = 1
+    await ClockCycles(dut.i_clk, 5)
     dut._log.info("Reset released.")
 
 
@@ -237,21 +237,21 @@ async def setup(dut):
 @cocotb.test()
 async def test_reset_behaviour(dut):
     """
-    While reset is asserted (rst_n=0), the 7-segment outputs should be
+    While reset is asserted (i_aresetn=0), the 7-segment outputs should be
     in a defined idle state.  We just confirm the DUT does not produce X/Z.
     """
-    cocotb.start_soon(Clock(dut.clk, CLK_PERIOD_NS, units="ns").start())
+    cocotb.start_soon(Clock(dut.i_clk, CLK_PERIOD_NS, units="ns").start())
 
-    dut.rst_n.value = 0
-    dut.ui_in[0].value     = 0
-    await ClockCycles(dut.clk, 20)
+    dut.i_aresetn.value = 0
+    dut.i_pwm.value     = 0
+    await ClockCycles(dut.i_clk, 20)
 
     # Check outputs are not X/Z
     for sig, name in [
         (dut.o_seg_freq,       "o_seg_freq"),
         (dut.o_digit_en_freq,  "o_digit_en_freq"),
-        (dut.uo_out[6:0],         "o_seg_dc"),
-        (dut.uio_out[3:0],    "o_digit_en_dc"),
+        (dut.o_seg_dc,         "o_seg_dc"),
+        (dut.o_digit_en_dc,    "o_digit_en_dc"),
     ]:
         assert sig.value.is_resolvable, \
             f"{name} contains X/Z during reset: {sig.value}"
@@ -275,12 +275,12 @@ async def test_1khz_50pct(dut):
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
 
     # Let displays settle for one full rotation
-    await ClockCycles(dut.clk, DISPLAY_SETTLE_CYCLES)
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
     freq_chars = await read_display(dut, dut.o_seg_freq, dut.o_dp_freq,
                                     dut.o_digit_en_freq, label="freq")
-    dc_chars   = await read_display(dut, dut.uo_out[6:0], dut.uo_out[7],
-                                    dut.uio_out[3:0],   label="dc")
+    dc_chars   = await read_display(dut, dut.o_seg_dc, dut.o_dp_dc,
+                                    dut.o_digit_en_dc,   label="dc")
 
     freq_val = chars_to_number(freq_chars)
     dc_val   = chars_to_number(dc_chars)
@@ -309,12 +309,12 @@ async def test_10khz_25pct(dut):
 
     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
-    await ClockCycles(dut.clk, DISPLAY_SETTLE_CYCLES)
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
     freq_chars = await read_display(dut, dut.o_seg_freq, dut.o_dp_freq,
                                     dut.o_digit_en_freq, label="freq")
-    dc_chars   = await read_display(dut, dut.uo_out[6:0], dut.uo_out[7],
-                                    dut.uio_out[3:0],   label="dc")
+    dc_chars   = await read_display(dut, dut.o_seg_dc, dut.o_dp_dc,
+                                    dut.o_digit_en_dc,   label="dc")
 
     freq_val = chars_to_number(freq_chars)
     dc_val   = chars_to_number(dc_chars)
@@ -343,12 +343,12 @@ async def test_100khz_75pct(dut):
 
     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
-    await ClockCycles(dut.clk, DISPLAY_SETTLE_CYCLES)
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
     freq_chars = await read_display(dut, dut.o_seg_freq, dut.o_dp_freq,
                                     dut.o_digit_en_freq, label="freq")
-    dc_chars   = await read_display(dut, dut.uo_out[6:0], dut.uo_out[7],
-                                    dut.uio_out[3:0],   label="dc")
+    dc_chars   = await read_display(dut, dut.o_seg_dc, dut.o_dp_dc,
+                                    dut.o_digit_en_dc,   label="dc")
 
     freq_val = chars_to_number(freq_chars)
     dc_val   = chars_to_number(dc_chars)
@@ -374,11 +374,11 @@ async def test_dc_edge_cases(dut):
     for duty in [1.0, 99.0]:
         dut._log.info(f"Testing edge duty cycle: {duty}%")
         await drive_pwm(dut, 10_000, duty, 100)
-        await ClockCycles(dut.clk, DISPLAY_SETTLE_CYCLES)
+        await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
         for sig, name in [
-            (dut.uo_out[6:0],        "o_seg_dc"),
-            (dut.uio_out[3:0],   "o_digit_en_dc"),
+            (dut.o_seg_dc,        "o_seg_dc"),
+            (dut.o_digit_en_dc,   "o_digit_en_dc"),
             (dut.o_seg_freq,      "o_seg_freq"),
             (dut.o_digit_en_freq, "o_digit_en_freq"),
         ]:
@@ -408,7 +408,7 @@ async def test_status_hi(dut):
 
     dut._log.info(f"Driving PWM at {FREQ_HZ//1_000_000} MHz to trigger HI status")
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
-    await ClockCycles(dut.clk, DISPLAY_SETTLE_CYCLES)
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
     freq_chars = await read_display(dut, dut.o_seg_freq, dut.o_dp_freq,
                                     dut.o_digit_en_freq, label="freq_hi")
@@ -437,7 +437,7 @@ async def test_status_lo(dut):
 
     dut._log.info(f"Driving PWM at {FREQ_HZ/1_000_000} MHz to trigger LO status")
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
-    await ClockCycles(dut.clk, DISPLAY_SETTLE_CYCLES)
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
     freq_chars = await read_display(dut, dut.o_seg_freq, dut.o_dp_freq,
                                     dut.o_digit_en_freq, label="freq_hi")
@@ -454,21 +454,21 @@ async def test_status_lo(dut):
 @cocotb.test()
 async def test_pwm_removed(dut):
     """
-    Start with a valid PWM signal, then remove it (hold ui_in[0] low).
+    Start with a valid PWM signal, then remove it (hold i_pwm low).
     Verify the freq display shows 'LO' (o_status = 3'b001).
     """
     await setup(dut)
 
     # First establish a valid signal
     await drive_pwm(dut, 10_000, 50.0, 3)
-    await ClockCycles(dut.clk, DISPLAY_SETTLE_CYCLES)
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
     # Now remove the PWM signal
-    dut.ui_in[0].value = 0
-    dut._log.info("PWM removed — holding ui_in[0] low.")
+    dut.i_pwm.value = 0
+    dut._log.info("PWM removed — holding i_pwm low.")
 
     # Wait long enough for freq_counter to detect signal loss
-    await ClockCycles(dut.clk, 110_000_000)
+    await ClockCycles(dut.i_clk, 110_000_000)
 
     freq_chars = await read_display(dut, dut.o_seg_freq, dut.o_dp_freq,
                                     dut.o_digit_en_freq, label="freq_lo")
