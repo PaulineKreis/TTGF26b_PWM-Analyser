@@ -13,14 +13,16 @@ module freq_counter # (
     output reg [2:0] o_status
 );
 
-reg [31:0] counter_live, counter_calc;
+reg [17:0] counter_live, counter_calc;  // 9999 < 2^17
 reg [7:0] counter_cycle;
 reg [31:0] watchdog_cntr;
 reg cntr_latch;
 wire w_pwm_re;
-reg [31:0] freq;
+reg [13:0] freq;
 
 // COUNTER LOGIC (FREQ)
+
+localparam LO_THRESHOLD = CLK_FREQ / 1000; // calculation for under 1 kHz does not need to be precise
 
 always @(posedge i_clk or negedge i_resetn) begin
     if (!i_resetn) begin
@@ -34,7 +36,8 @@ always @(posedge i_clk or negedge i_resetn) begin
             cntr_latch <= 1;
         end else begin
             if (cntr_latch)
-                counter_live <= counter_live + 1;
+                if (counter_live < LO_THRESHOLD)
+                    counter_live <= counter_live + 1;
         end
     end
 end
@@ -71,12 +74,18 @@ end
 
 // REGISTERED OUTPUT CALCULATION
 
+localparam CLK_FREQ_KHZ = CLK_FREQ / 1000;
+localparam HI_THRESHOLD = CLK_FREQ_KHZ / (9999 + 1); // compile time constant (= 10 for 100 MHz)
+
 always @(posedge i_clk or negedge i_resetn) begin
     if (!i_resetn) begin
         freq <= 0;
     end else begin
         if (counter_cycle == RESOLVE_WAIT_CYCLE) begin
-            freq <= CLK_FREQ / (1000 * counter_calc);
+            if (counter_calc <= HI_THRESHOLD)
+                freq <= 14'h3FFF; // Sentinel: overflow, > 9999 guaranteed
+            else
+                freq <= CLK_FREQ / (1000 * counter_calc);
         end
     end
 end
