@@ -1,6 +1,6 @@
 module SevenSegmentDecoder
 #(
-    parameter CLK_HZ = 100_000_000,      // input clock frequency in Hz
+    parameter CLK_HZ = 100_000,      // input clock frequency in Hz
     parameter DIGIT_REFRESH_HZ = 1000,  // digit switching frequency in Hz
 
     parameter COMMON_ANODE = 1  // specifies type of display that is used (common anode or cathode)
