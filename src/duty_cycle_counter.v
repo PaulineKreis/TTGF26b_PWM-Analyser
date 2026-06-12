@@ -1,6 +1,6 @@
 module duty_cycle_counter # (
     parameter CLK_FREQ = 100_000_000,
-    parameter REDUCED_BITS = 10       // target bit width after barrel shift
+    parameter REDUCED_BITS = 8       // target bit width after barrel shift
 ) (
     input wire i_pwm,
     input wire i_clk,
