@@ -74,7 +74,8 @@ always @(posedge i_clk or negedge i_resetn) begin
     if (!i_resetn) begin
         o_duty_cycle <= 0;
     end else begin
-        if (cntr_latch_fe_r)
+        if (cntr_latch_fe)
+        //if (cntr_latch_fe_r)
             //o_duty_cycle <= duty_calc_tmp / re_re_shifted;
             //o_duty_cycle <= (counter_calc_re_fe * 100) / counter_calc_re_re;
             o_duty_cycle <= 8'b01000101;
