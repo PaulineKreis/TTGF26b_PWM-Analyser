@@ -43,7 +43,7 @@ end
 // BARREL SHIFTER (registered)
 // finds how many bits re_re exceeds REDUCED_BITS and shifts both values equally
 
-[REDUCED_BITS-1:0] re_re_shifted, re_fe_shifted;
+reg [REDUCED_BITS-1:0] re_re_shifted, re_fe_shifted;
 /* reg cntr_latch_fe_r;
 
 always @(posedge i_clk or negedge i_resetn) begin : barrel_shift
