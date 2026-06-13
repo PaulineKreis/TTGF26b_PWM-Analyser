@@ -1,6 +1,6 @@
 module duty_cycle_counter # (
     parameter CLK_FREQ = 100_000_000,
-    parameter REDUCED_BITS = 10       // target bit width after barrel shift
+    // parameter REDUCED_BITS = 10       // target bit width after barrel shift
 ) (
     input wire i_pwm,
     input wire i_clk,
@@ -43,7 +43,7 @@ end
 // BARREL SHIFTER (registered)
 // finds how many bits re_re exceeds REDUCED_BITS and shifts both values equally
 
-reg [REDUCED_BITS-1:0] re_re_shifted, re_fe_shifted;
+// reg [REDUCED_BITS-1:0] re_re_shifted, re_fe_shifted;
 /* reg cntr_latch_fe_r;
 
 always @(posedge i_clk or negedge i_resetn) begin : barrel_shift
@@ -67,8 +67,8 @@ end */
 
 // REGISTERED OUTPUT CALCULATION
 
-wire [REDUCED_BITS+6:0] duty_calc_tmp; // REDUCED_BITS + 7 bit for *100
-assign duty_calc_tmp = re_fe_shifted * 100;
+// wire [REDUCED_BITS+6:0] duty_calc_tmp; // REDUCED_BITS + 7 bit for *100
+// assign duty_calc_tmp = re_fe_shifted * 100;
 
 always @(posedge i_clk or negedge i_resetn) begin
     if (!i_resetn) begin
@@ -78,7 +78,7 @@ always @(posedge i_clk or negedge i_resetn) begin
         //if (cntr_latch_fe_r)
             //o_duty_cycle <= duty_calc_tmp / re_re_shifted;
             //o_duty_cycle <= (counter_calc_re_fe * 100) / counter_calc_re_re;
-            o_duty_cycle <= 8'b01000101;
+            o_duty_cycle <= 7'b1000101;
     end
 end
 
