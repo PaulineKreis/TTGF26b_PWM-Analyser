@@ -85,7 +85,8 @@ always @(posedge i_clk or negedge i_resetn) begin
             if (counter_calc <= HI_THRESHOLD)
                 freq <= 14'h3FFF; // Sentinel: overflow, > 9999 guaranteed
             else
-                freq <= CLK_FREQ / (1000 * counter_calc);
+                freq <= CLK_FREQ_KHZ / counter_calc;
+                // freq <= CLK_FREQ / (1000 * counter_calc);
                 // freq <= 13'd50000;
         end
     end
