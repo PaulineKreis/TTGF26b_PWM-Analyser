@@ -19,6 +19,8 @@ reg [31:0] watchdog_cntr;
 reg cntr_latch;
 wire w_pwm_re;
 reg [13:0] freq;
+wire [16:0] div_result;
+wire div_busy, div_done;
 
 // COUNTER LOGIC (FREQ)
 
@@ -77,7 +79,7 @@ end
 localparam CLK_FREQ_KHZ = CLK_FREQ / 1000;
 localparam HI_THRESHOLD = CLK_FREQ_KHZ / (9999 + 1); // compile time constant (= 10 for 100 MHz)
 
-always @(posedge i_clk or negedge i_resetn) begin
+/* always @(posedge i_clk or negedge i_resetn) begin
     if (!i_resetn) begin
         freq <= 0;
     end else begin
@@ -90,6 +92,25 @@ always @(posedge i_clk or negedge i_resetn) begin
                 // freq <= 13'd50000;
         end
     end
+end */
+
+shift_subtract_divider #(.WIDTH_A(17), .WIDTH_B(17)) div_inst (
+    .clk(i_clk),
+    .resetn(i_resetn),
+    .start(counter_cycle == RESOLVE_WAIT_CYCLE && counter_calc > HI_THRESHOLD),
+    //.dividend(CLK_FREQ_KHZ[16:0]),
+    .dividend(17'd100000),
+    .divisor(counter_calc),
+    .quotient(div_result),
+    .busy(div_busy),
+    .done(div_done)
+);
+
+always @(posedge i_clk or negedge i_resetn) begin
+    if (!i_resetn) freq <= 0;
+    else if (div_done) freq <= div_result;
+    else if (counter_cycle == RESOLVE_WAIT_CYCLE && counter_calc <= HI_THRESHOLD)
+        freq <= 14'h3FFF;
 end
 
 assign o_freq_khz = freq[13:0];
