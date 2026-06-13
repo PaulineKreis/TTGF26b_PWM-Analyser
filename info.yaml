@@ -24,7 +24,7 @@ project:
     - "freq_counter.v"
     - "falling_edge_detect.v"
     - "duty_cycle_counter.v"
-    - "shift_subtract_divider"
+    - "shift_subtract_divider.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
