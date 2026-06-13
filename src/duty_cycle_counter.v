@@ -40,21 +40,29 @@ always @(posedge i_clk or negedge i_resetn) begin
     end
 end
 
-// BARREL SHIFTER
+// BARREL SHIFTER (registered)
 // finds how many bits re_re exceeds REDUCED_BITS and shifts both values equally
 
-reg [4:0] shift_amount;
 reg [REDUCED_BITS-1:0] re_re_shifted, re_fe_shifted;
+reg cntr_latch_fe_r;
 
-always @(*) begin : barrel_shift
+always @(posedge i_clk or negedge i_resetn) begin : barrel_shift
     integer k;
-    shift_amount = 0;
-    for (k = 31; k >= REDUCED_BITS; k = k - 1) begin
-        if (counter_calc_re_re[k] == 1'b1)
-            shift_amount = k - (REDUCED_BITS - 1);
+    reg [4:0] shift_amount;
+    if (!i_resetn) begin
+        re_re_shifted <= 0;
+        re_fe_shifted <= 0;
+        cntr_latch_fe_r <= 0;
+    end else begin
+        shift_amount = 0;
+        for (k = 31; k >= REDUCED_BITS; k = k - 1) begin
+            if (counter_calc_re_re[k] == 1'b1)
+                shift_amount = k - (REDUCED_BITS - 1);
+        end
+        re_re_shifted <= counter_calc_re_re >> shift_amount;
+        re_fe_shifted <= counter_calc_re_fe >> shift_amount;
+        cntr_latch_fe_r <= cntr_latch_fe;
     end
-    re_re_shifted = counter_calc_re_re >> shift_amount;
-    re_fe_shifted = counter_calc_re_fe >> shift_amount;
 end
 
 // REGISTERED OUTPUT CALCULATION
@@ -66,7 +74,7 @@ always @(posedge i_clk or negedge i_resetn) begin
     if (!i_resetn) begin
         o_duty_cycle <= 0;
     end else begin
-        if (cntr_latch_fe)
+        if (cntr_latch_fe_r)
             o_duty_cycle <= duty_calc_tmp / re_re_shifted;
             //o_duty_cycle <= (counter_calc_re_fe * 100) / counter_calc_re_re;
             //o_duty_cycle <= 8'b01000101;
