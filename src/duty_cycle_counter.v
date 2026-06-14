@@ -1,5 +1,5 @@
 module duty_cycle_counter # (
-    parameter CLK_FREQ = 100_000_000
+    parameter CLK_FREQ = 1_000_000
     // parameter REDUCED_BITS = 10       // target bit width after barrel shift
 ) (
     input wire i_pwm,
@@ -9,7 +9,12 @@ module duty_cycle_counter # (
     output reg [6:0] o_duty_cycle
 );
 
-reg [31:0] counter_live_re, counter_live_fe, counter_calc_re_re, counter_calc_re_fe;
+// counters limited to 17 bits: at 1 kHz min PWM and 100 MHz clock,
+// one period = 100_000 ticks < 2^17
+localparam LO_THRESHOLD = CLK_FREQ / 1000; // = 100_000, max valid tick count
+
+// reg [31:0] counter_live_re, counter_live_fe, counter_calc_re_re, counter_calc_re_fe;
+reg [16:0] counter_live_re, counter_live_fe, counter_calc_re_re, counter_calc_re_fe;
 
 reg cntr_latch, cntr_latch_fe;
 wire w_pwm_re, w_pwm_fe;
@@ -28,13 +33,17 @@ always @(posedge i_clk or negedge i_resetn) begin
             counter_live_fe <= 0;
             counter_calc_re_re <= counter_live_re + 1;
             cntr_latch <= 1;
+            cntr_latch_fe <= 0;
         end else if (w_pwm_fe) begin
             counter_calc_re_fe <= counter_live_fe + 1;
             cntr_latch_fe <= 1;
         end else begin
             if (cntr_latch) begin
-                counter_live_re <= counter_live_re + 1;
-                counter_live_fe <= counter_live_fe + 1;
+                // stop counting at LO_THRESHOLD so 17 bits never overflow
+                if (counter_live_re < LO_THRESHOLD)
+                    counter_live_re <= counter_live_re + 1;
+                if (counter_live_fe < LO_THRESHOLD)
+                    counter_live_fe <= counter_live_fe + 1;
             end
         end
     end
@@ -70,7 +79,7 @@ end */
 // wire [REDUCED_BITS+6:0] duty_calc_tmp; // REDUCED_BITS + 7 bit for *100
 // assign duty_calc_tmp = re_fe_shifted * 100;
 
-always @(posedge i_clk or negedge i_resetn) begin
+/* always @(posedge i_clk or negedge i_resetn) begin
     if (!i_resetn) begin
         o_duty_cycle <= 0;
     end else begin
@@ -80,6 +89,41 @@ always @(posedge i_clk or negedge i_resetn) begin
             //o_duty_cycle <= (counter_calc_re_fe * 100) / counter_calc_re_re;
             o_duty_cycle <= 7'b1000101;
     end
+end */
+
+// REGISTERED OUTPUT CALCULATION via sequential divider
+// duty = (re_fe * 100) / re_re
+// dividend: 17-bit re_fe * 100 (7 bit) -> needs 24 bit
+// divisor:  17-bit re_re
+
+wire [23:0] dividend = counter_calc_re_fe * 7'd100;
+wire [23:0] div_result;
+wire div_busy, div_done;
+
+// generate a one-cycle start pulse from the (level) cntr_latch_fe
+reg cntr_latch_fe_prev;
+always @(posedge i_clk or negedge i_resetn) begin
+    if (!i_resetn) cntr_latch_fe_prev <= 0;
+    else cntr_latch_fe_prev <= cntr_latch_fe;
+end
+wire start_pulse = cntr_latch_fe && !cntr_latch_fe_prev;
+
+shift_subtract_divider #(.WIDTH_A(24), .WIDTH_B(17)) div_inst (
+    .clk(i_clk),
+    .resetn(i_resetn),
+    .start(start_pulse),
+    .dividend(dividend),
+    .divisor(counter_calc_re_re),
+    .quotient(div_result),
+    .busy(div_busy),
+    .done(div_done)
+);
+
+always @(posedge i_clk or negedge i_resetn) begin
+    if (!i_resetn)
+        o_duty_cycle <= 0;
+    else if (div_done)
+        o_duty_cycle <= div_result[6:0];
 end
 
 falling_edge_detect pwm_fe
