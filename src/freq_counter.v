@@ -21,6 +21,7 @@ wire w_pwm_re;
 reg [13:0] freq;
 wire [16:0] div_result;
 wire div_busy, div_done;
+reg resolve_prev;
 
 // COUNTER LOGIC (FREQ)
 
@@ -94,13 +95,23 @@ localparam HI_THRESHOLD = CLK_FREQ_KHZ / (9999 + 1); // compile time constant (=
     end
 end */
 
+// pulse generation: start_pulse is high for exactly one clock
+// when counter_cycle first reaches RESOLVE_WAIT_CYCLE
+wire resolve_now = (counter_cycle == RESOLVE_WAIT_CYCLE);
+
+always @(posedge i_clk or negedge i_resetn) begin
+    if (!i_resetn) resolve_prev <= 0;
+    else resolve_prev <= resolve_now;
+end
+
+wire start_pulse = resolve_now && !resolve_prev;
+
 shift_subtract_divider #(.WIDTH_A(17), .WIDTH_B(17)) div_inst (
     .clk(i_clk),
     .resetn(i_resetn),
-    .start(counter_cycle == RESOLVE_WAIT_CYCLE && counter_calc > HI_THRESHOLD),
-    //.dividend(CLK_FREQ_KHZ[16:0]),
+    .start(start_pulse && counter_calc > HI_THRESHOLD),
     .dividend(17'd100000),
-    .divisor(counter_calc),
+    .divisor(counter_calc[16:0]),
     .quotient(div_result),
     .busy(div_busy),
     .done(div_done)
@@ -109,7 +120,7 @@ shift_subtract_divider #(.WIDTH_A(17), .WIDTH_B(17)) div_inst (
 always @(posedge i_clk or negedge i_resetn) begin
     if (!i_resetn) freq <= 0;
     else if (div_done) freq <= div_result;
-    else if (counter_cycle == RESOLVE_WAIT_CYCLE && counter_calc <= HI_THRESHOLD)
+    else if (start_pulse && counter_calc <= HI_THRESHOLD)
         freq <= 14'h3FFF;
 end
 
