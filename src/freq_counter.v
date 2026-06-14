@@ -110,7 +110,7 @@ shift_subtract_divider #(.WIDTH_A(17), .WIDTH_B(17)) div_inst (
     .clk(i_clk),
     .resetn(i_resetn),
     .start(start_pulse && counter_calc > HI_THRESHOLD),
-    .dividend(17'd100000),
+    .dividend(CLK_FREQ_KHZ[16:0]),
     .divisor(counter_calc[16:0]),
     .quotient(div_result),
     .busy(div_busy),
