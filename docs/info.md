@@ -17,4 +17,4 @@ Load cocotb onto...
 
 ## External hardware
 
-- 2x 4-digit 7-segment display with decimal point
+- 4-digit 7-segment display with decimal point

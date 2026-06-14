@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module freq_counter # (
-    parameter CLK_FREQ = 10_000_000,
+    parameter CLK_FREQ = 50_000_000,
     parameter RESOLVE_WAIT_CYCLE = 5,
     parameter WATCHDOG_TICK = 1_000_000
 ) (
@@ -79,21 +79,6 @@ end
 
 localparam CLK_FREQ_KHZ = CLK_FREQ / 1000;
 localparam HI_THRESHOLD = CLK_FREQ_KHZ / (9999 + 1); // compile time constant (= 10 for 100 MHz)
-
-/* always @(posedge i_clk or negedge i_resetn) begin
-    if (!i_resetn) begin
-        freq <= 0;
-    end else begin
-        if (counter_cycle == RESOLVE_WAIT_CYCLE) begin
-            if (counter_calc <= HI_THRESHOLD)
-                freq <= 14'h3FFF; // Sentinel: overflow, > 9999 guaranteed
-            else
-                freq <= CLK_FREQ_KHZ / counter_calc;
-                // freq <= CLK_FREQ / (1000 * counter_calc);
-                // freq <= 13'd50000;
-        end
-    end
-end */
 
 // pulse generation: start_pulse is high for exactly one clock
 // when counter_cycle first reaches RESOLVE_WAIT_CYCLE
