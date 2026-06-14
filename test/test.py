@@ -415,7 +415,7 @@ async def test_status_hi(dut):
 
     # Drive as fast as possible — single-cycle high, single-cycle low = 50 MHz
     # This is above typical freq_counter range and should trigger HI status.
-    FREQ_HZ  = 25_000_000
+    FREQ_HZ  = 4_000_000
     DUTY_PCT = 50.0
     PERIODS  = 500
 
