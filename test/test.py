@@ -2,7 +2,7 @@
 Cocotb testbench for PWM_Analyser top-level module.
 
 DUT ports:
-    i_clk           - 24 MHz system clock
+    i_clk           - 25 MHz system clock
     i_pwm           - PWM input signal
     i_aresetn       - Active-low asynchronous reset
 
@@ -27,10 +27,10 @@ from cocotb.triggers import RisingEdge, FallingEdge, Timer, ClockCycles
 # Constants
 # ──────────────────────────────────────────────────────────────────────────────
 
-CLK_HZ          = 24_000_000
-CLK_PERIOD_NS   = 42
+CLK_HZ          = 25_000_000
+CLK_PERIOD_NS   = 40
 # CLK_PERIOD_NS   = (1/CLK_HZ) * 1_000_000_000
-PWM_HOLD_CYCLES = 24_000_100
+PWM_HOLD_CYCLES = 25_000_100
 # SevenSegmentDecoder defaults
 DIGIT_REFRESH_HZ    = 1000
 REFRESH_COUNT_MAX   = CLK_HZ // DIGIT_REFRESH_HZ   # 100 000 cycles per digit
