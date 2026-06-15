@@ -252,6 +252,8 @@ async def test_reset_behaviour(dut):
     """
     cocotb.start_soon(Clock(dut.i_clk, CLK_PERIOD_NS, units="ns").start())
 
+    dut.i_aresetn.value = 1
+    await ClockCycles(dut.i_clk, 5)
     dut.i_aresetn.value = 0
     dut.i_pwm.value     = 0
     await ClockCycles(dut.i_clk, 100)
