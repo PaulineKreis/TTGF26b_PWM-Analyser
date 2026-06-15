@@ -30,8 +30,8 @@ project:
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
 pinout:
   # Inputs
-  ui[0]: "PWM_INPUT"
-  ui[1]: "NC"
+  ui[0]: "PWM_INPUT"        #Input for the PWM Signal to be analysed
+  ui[1]: "MODE_SWITCH"      #Input to select which PWM property to view (0: Duty Cycle, 1: Frequency)
   ui[2]: "NC"
   ui[3]: "NC"
   ui[4]: "NC"
@@ -40,20 +40,20 @@ pinout:
   ui[7]: "NC"
 
   # Outputs
-  uo[0]: "A"
-  uo[1]: "B"
-  uo[2]: "C"
-  uo[3]: "D"
-  uo[4]: "E"
-  uo[5]: "F"
-  uo[6]: "G"
-  uo[7]: "DP"
+  uo[0]: "A"                #Output to LED A of the 7-Segment Display 
+  uo[1]: "B"                #Output to LED B of the 7-Segment Display
+  uo[2]: "C"                #Output to LED C of the 7-Segment Display  
+  uo[3]: "D"                #Output to LED D of the 7-Segment Display
+  uo[4]: "E"                #Output to LED E of the 7-Segment Display
+  uo[5]: "F"                #Output to LED F of the 7-Segment Display
+  uo[6]: "G"                #Output to LED G of the 7-Segment Display
+  uo[7]: "DP"               #Output to Decimal Point LED of the 7-Segment Display
 
   # Bidirectional pins
-  uio[0]: "DIGIT_EN_0"
-  uio[1]: "DIGIT_EN_1"
-  uio[2]: "DIGIT_EN_2"
-  uio[3]: "DIGIT_EN_3"
+  uio[0]: "DIGIT_EN_0"      #Output Pin for selecting which 7-Segment Display to drive
+  uio[1]: "DIGIT_EN_1"      #Output Pin for selecting which 7-Segment Display to drive
+  uio[2]: "DIGIT_EN_2"      #Output Pin for selecting which 7-Segment Display to drive
+  uio[3]: "DIGIT_EN_3"      #Output Pin for selecting which 7-Segment Display to drive
   uio[4]: "NC"
   uio[5]: "NC"
   uio[6]: "NC"

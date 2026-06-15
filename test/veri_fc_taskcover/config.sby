@@ -1,0 +1,16 @@
+[options]
+mode cover
+depth 100
+
+[engines]
+smtbmc
+
+[files]
+../src/freq_counter.v
+../src/rising_edge_detect.v
+../src/shift_subtract_divider.v
+
+[script]
+read -formal rising_edge_detect.v
+read -formal freq_counter.v
+prep -top freq_counter -chparam WATCHDOG_TICK 10

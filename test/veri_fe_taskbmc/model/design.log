@@ -1,0 +1,208 @@
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.65 (git sha1 b85cad634, g++ 13.3.0-6ubuntu2~24.04.1 -fPIC -O3)
+
+-- Executing script file `../model/design.ys' --
+
+1. Executing Verilog-2005 frontend: falling_edge_detect.v
+Parsing formal SystemVerilog input from `falling_edge_detect.v' to AST representation.
+Storing AST representation for module `$abstract\falling_edge_detect'.
+Successfully finished Verilog frontend.
+
+2. Executing PREP pass.
+
+2.1. Executing HIERARCHY pass (managing design hierarchy).
+
+2.2. Executing AST frontend in derive mode using pre-parsed AST for module `\falling_edge_detect'.
+Generating RTLIL representation for module `\falling_edge_detect'.
+
+2.2.1. Analyzing design hierarchy..
+Top module:  \falling_edge_detect
+
+2.2.2. Analyzing design hierarchy..
+Top module:  \falling_edge_detect
+Removing unused module `$abstract\falling_edge_detect'.
+Removed 1 unused modules.
+Module falling_edge_detect directly or indirectly contains formal properties -> setting "keep" attribute.
+
+2.3. Executing PROC pass (convert processes to netlists).
+
+2.3.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+2.3.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 1 switch rules as full_case in process $proc$falling_edge_detect.v:14$1 in module falling_edge_detect.
+Removed a total of 0 dead cases.
+
+2.3.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 2 redundant assignments.
+Promoted 3 assignments to connections.
+
+2.3.4. Executing PROC_INIT pass (extract init attributes).
+Found init rule in `\falling_edge_detect.$proc$falling_edge_detect.v:24$10'.
+  Set init value: \f_past_valid = 1'0
+
+2.3.5. Executing PROC_ARST pass (detect async resets in processes).
+Found async reset \resetn in `\falling_edge_detect.$proc$falling_edge_detect.v:14$1'.
+
+2.3.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 0 switches.
+<suppressed ~3 debug messages>
+
+2.3.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\falling_edge_detect.$proc$falling_edge_detect.v:25$11'.
+Creating decoders for process `\falling_edge_detect.$proc$falling_edge_detect.v:24$10'.
+Creating decoders for process `\falling_edge_detect.$proc$falling_edge_detect.v:36$7'.
+     1/1: \_bf_01__EN
+Creating decoders for process `\falling_edge_detect.$proc$falling_edge_detect.v:26$5'.
+     1/1: \_cf_01__EN
+Creating decoders for process `\falling_edge_detect.$proc$falling_edge_detect.v:14$1'.
+     1/1: $0\delay_reg[0:0]
+
+2.3.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+
+2.3.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\falling_edge_detect.\f_past_valid' using process `\falling_edge_detect.$proc$falling_edge_detect.v:26$5'.
+  created $dff cell `$procdff$20' with positive edge clock.
+Creating register for signal `\falling_edge_detect.\delay_reg' using process `\falling_edge_detect.$proc$falling_edge_detect.v:14$1'.
+  created $adff cell `$procdff$25' with positive edge clock and positive level reset.
+
+2.3.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+2.3.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Removing empty process `falling_edge_detect.$proc$falling_edge_detect.v:25$11'.
+Removing empty process `falling_edge_detect.$proc$falling_edge_detect.v:24$10'.
+Found and cleaned up 2 empty switches in `\falling_edge_detect.$proc$falling_edge_detect.v:36$7'.
+Removing empty process `falling_edge_detect.$proc$falling_edge_detect.v:36$7'.
+Found and cleaned up 1 empty switch in `\falling_edge_detect.$proc$falling_edge_detect.v:26$5'.
+Removing empty process `falling_edge_detect.$proc$falling_edge_detect.v:26$5'.
+Removing empty process `falling_edge_detect.$proc$falling_edge_detect.v:14$1'.
+Cleaned up 3 empty switches.
+
+2.3.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module falling_edge_detect.
+<suppressed ~7 debug messages>
+
+2.4. Executing FUTURE pass.
+
+2.5. Executing OPT_EXPR pass (perform const folding).
+Optimizing module falling_edge_detect.
+
+2.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \falling_edge_detect..
+Removed 3 unused cells and 15 unused wires.
+<suppressed ~4 debug messages>
+
+2.7. Executing CHECK pass (checking for obvious problems).
+Checking module falling_edge_detect...
+Found and reported 0 problems.
+
+2.8. Executing OPT pass (performing simple optimizations).
+
+2.8.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module falling_edge_detect.
+
+2.8.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\falling_edge_detect'.
+Computing hashes of 12 cells of `\falling_edge_detect'.
+Finding duplicate cells in `\falling_edge_detect'.
+Removed a total of 0 cells.
+
+2.8.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \falling_edge_detect..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~5 debug messages>
+
+2.8.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \falling_edge_detect.
+Performed a total of 0 changes.
+
+2.8.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\falling_edge_detect'.
+Computing hashes of 12 cells of `\falling_edge_detect'.
+Finding duplicate cells in `\falling_edge_detect'.
+Removed a total of 0 cells.
+
+2.8.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \falling_edge_detect..
+
+2.8.7. Executing OPT_EXPR pass (perform const folding).
+Optimizing module falling_edge_detect.
+
+2.8.8. Finished fast OPT passes. (There is nothing left to do.)
+
+2.9. Executing WREDUCE pass (reducing word size of cells).
+
+2.10. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \falling_edge_detect..
+
+2.11. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+2.12. Executing OPT pass (performing simple optimizations).
+
+2.12.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module falling_edge_detect.
+
+2.12.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\falling_edge_detect'.
+Computing hashes of 12 cells of `\falling_edge_detect'.
+Finding duplicate cells in `\falling_edge_detect'.
+Removed a total of 0 cells.
+
+2.12.3. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \falling_edge_detect..
+
+2.12.4. Finished fast OPT passes.
+
+2.13. Executing SORT pass.
+
+2.14. Printing statistics.
+
+=== falling_edge_detect ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       12 wires
+       12 wire bits
+        8 public wires
+        8 public wire bits
+        4 ports
+        4 port bits
+       12 cells
+        1   $adff
+        1   $and
+        3   $check
+        1   $dff
+        3   $mux
+        3   $not
+
+2.15. Executing CHECK pass (checking for obvious problems).
+Checking module falling_edge_detect...
+Found and reported 0 problems.
+
+3. Executing HIERARCHY pass (managing design hierarchy).
+Attribute `top' found on module `falling_edge_detect'. Setting top module to falling_edge_detect.
+
+3.1. Analyzing design hierarchy..
+Top module:  \falling_edge_detect
+
+3.2. Analyzing design hierarchy..
+Top module:  \falling_edge_detect
+Removed 0 unused modules.
+Module falling_edge_detect directly or indirectly contains formal properties -> setting "keep" attribute.
+
+4. Executing jny backend.
+
+5. Executing RTLIL backend.
+Output filename: ../model/design.il
+
+End of script. Logfile hash: d177837faa, time: 0.02s, user: 0.02s, system: 0.01s, MEM: 35.48 MB peak
+Yosys 0.65 (git sha1 b85cad634, g++ 13.3.0-6ubuntu2~24.04.1 -fPIC -O3)
+Time spent: 17% 3x opt_merge (0 sec), 12% 2x hierarchy (0 sec), ...

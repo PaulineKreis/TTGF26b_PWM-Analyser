@@ -1,0 +1,7 @@
+# running in veri_taskbmc/src/
+read -formal rising_edge_detect.v
+prep -top rising_edge_detect
+hierarchy -smtcheck
+rename -witness
+write_jny -no-connections ../model/design.json
+write_rtlil ../model/design.il

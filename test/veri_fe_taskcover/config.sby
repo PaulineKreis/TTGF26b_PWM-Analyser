@@ -1,0 +1,13 @@
+[options]
+mode cover
+depth 100
+
+[engines]
+smtbmc
+
+[files]
+../src/falling_edge_detect.v
+
+[script]
+read -formal falling_edge_detect.v 
+prep -top falling_edge_detect

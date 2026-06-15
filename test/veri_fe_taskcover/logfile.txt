@@ -1,0 +1,29 @@
+SBY 22:04:37 [veri_fe_taskcover] Removing directory '/foss/designs/TTGF26b_PWM-Analyser/test/veri_fe_taskcover'.
+SBY 22:04:37 [veri_fe_taskcover] Copy '/foss/designs/TTGF26b_PWM-Analyser/test/../src/falling_edge_detect.v' to '/foss/designs/TTGF26b_PWM-Analyser/test/veri_fe_taskcover/src/falling_edge_detect.v'.
+SBY 22:04:37 [veri_fe_taskcover] engine_0: smtbmc
+SBY 22:04:37 [veri_fe_taskcover] base: starting process "cd veri_fe_taskcover/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY 22:04:37 [veri_fe_taskcover] base: finished (returncode=0)
+SBY 22:04:37 [veri_fe_taskcover] prep: starting process "cd veri_fe_taskcover/model; yosys -ql design_prep.log design_prep.ys"
+SBY 22:04:37 [veri_fe_taskcover] prep: finished (returncode=0)
+SBY 22:04:37 [veri_fe_taskcover] smt2: starting process "cd veri_fe_taskcover/model; yosys -ql design_smt2.log design_smt2.ys"
+SBY 22:04:37 [veri_fe_taskcover] smt2: finished (returncode=0)
+SBY 22:04:37 [veri_fe_taskcover] engine_0: starting process "cd veri_fe_taskcover; yosys-smtbmc --presat --unroll -c --noprogress -t 100  --append 0 --dump-vcd engine_0/trace%.vcd --dump-yw engine_0/trace%.yw --dump-vlogtb engine_0/trace%_tb.v --dump-smtc engine_0/trace%.smtc model/design_smt2.smt2"
+SBY 22:04:37 [veri_fe_taskcover] engine_0: ##   0:00:00  Solver: yices
+SBY 22:04:37 [veri_fe_taskcover] engine_0: ##   0:00:00  Checking cover reachability in step 0..
+SBY 22:04:37 [veri_fe_taskcover] engine_0: ##   0:00:00  Checking cover reachability in step 1..
+SBY 22:04:37 [veri_fe_taskcover] engine_0: ##   0:00:00  Checking cover reachability in step 2..
+SBY 22:04:37 [veri_fe_taskcover] engine_0: ##   0:00:00  Checking cover reachability in step 3..
+SBY 22:04:37 [veri_fe_taskcover] engine_0: ##   0:00:00  Reached cover statement in step 3 at falling_edge_detect: _cf_01_
+SBY 22:04:37 [veri_fe_taskcover] engine_0: ##   0:00:00  Writing trace to VCD file: engine_0/trace0.vcd
+SBY 22:04:37 [veri_fe_taskcover] engine_0: ##   0:00:00  Writing trace to Verilog testbench: engine_0/trace0_tb.v
+SBY 22:04:37 [veri_fe_taskcover] engine_0: ##   0:00:00  Writing trace to constraints file: engine_0/trace0.smtc
+SBY 22:04:37 [veri_fe_taskcover] engine_0: ##   0:00:00  Writing trace to Yosys witness file: engine_0/trace0.yw
+SBY 22:04:37 [veri_fe_taskcover] engine_0: ##   0:00:00  Status: passed
+SBY 22:04:37 [veri_fe_taskcover] engine_0: finished (returncode=0)
+SBY 22:04:37 [veri_fe_taskcover] engine_0: Status returned by engine: pass
+SBY 22:04:37 [veri_fe_taskcover] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY 22:04:37 [veri_fe_taskcover] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY 22:04:37 [veri_fe_taskcover] summary: engine_0 (smtbmc) returned pass
+SBY 22:04:37 [veri_fe_taskcover] summary: cover trace: veri_fe_taskcover/engine_0/trace0.vcd
+SBY 22:04:37 [veri_fe_taskcover] summary:   reached cover statement falling_edge_detect._cf_01_ at falling_edge_detect.v:31.10-31.37 step 3
+SBY 22:04:37 [veri_fe_taskcover] DONE (PASS, rc=0)

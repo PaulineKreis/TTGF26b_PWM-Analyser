@@ -1,0 +1,369 @@
+
+ /----------------------------------------------------------------------------\
+ |  yosys -- Yosys Open SYnthesis Suite                                       |
+ |  Copyright (C) 2012 - 2026  Claire Xenia Wolf <claire@yosyshq.com>         |
+ |  Distributed under an ISC-like license, type "license" to see terms        |
+ \----------------------------------------------------------------------------/
+ Yosys 0.65 (git sha1 b85cad634, g++ 13.3.0-6ubuntu2~24.04.1 -fPIC -O3)
+
+-- Executing script file `../model/design.ys' --
+
+1. Executing Verilog-2005 frontend: SevenSegmentDecoder.v
+Parsing formal SystemVerilog input from `SevenSegmentDecoder.v' to AST representation.
+Storing AST representation for module `$abstract\SevenSegmentDecoder'.
+Successfully finished Verilog frontend.
+
+2. Executing PREP pass.
+
+2.1. Executing HIERARCHY pass (managing design hierarchy).
+
+2.2. Executing AST frontend in derive mode using pre-parsed AST for module `\SevenSegmentDecoder'.
+Generating RTLIL representation for module `\SevenSegmentDecoder'.
+
+2.2.1. Analyzing design hierarchy..
+Top module:  \SevenSegmentDecoder
+
+2.2.2. Analyzing design hierarchy..
+Top module:  \SevenSegmentDecoder
+Removing unused module `$abstract\SevenSegmentDecoder'.
+Removed 1 unused modules.
+Module SevenSegmentDecoder directly or indirectly contains formal properties -> setting "keep" attribute.
+
+2.3. Executing PROC pass (convert processes to netlists).
+
+2.3.1. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Cleaned up 0 empty switches.
+
+2.3.2. Executing PROC_RMDEAD pass (remove dead branches from decision trees).
+Marked 1 switch rules as full_case in process $proc$SevenSegmentDecoder.v:234$73 in module SevenSegmentDecoder.
+Marked 1 switch rules as full_case in process $proc$SevenSegmentDecoder.v:189$20 in module SevenSegmentDecoder.
+Marked 2 switch rules as full_case in process $proc$SevenSegmentDecoder.v:160$18 in module SevenSegmentDecoder.
+Removed 1 dead cases from process $proc$SevenSegmentDecoder.v:149$17 in module SevenSegmentDecoder.
+Marked 1 switch rules as full_case in process $proc$SevenSegmentDecoder.v:149$17 in module SevenSegmentDecoder.
+Marked 1 switch rules as full_case in process $proc$SevenSegmentDecoder.v:108$16 in module SevenSegmentDecoder.
+Removed 1 dead cases from process $proc$SevenSegmentDecoder.v:87$6 in module SevenSegmentDecoder.
+Marked 1 switch rules as full_case in process $proc$SevenSegmentDecoder.v:87$6 in module SevenSegmentDecoder.
+Marked 2 switch rules as full_case in process $proc$SevenSegmentDecoder.v:62$1 in module SevenSegmentDecoder.
+Removed a total of 2 dead cases.
+
+2.3.3. Executing PROC_PRUNE pass (remove redundant assignments in processes).
+Removed 6 redundant assignments.
+Promoted 18 assignments to connections.
+
+2.3.4. Executing PROC_INIT pass (extract init attributes).
+
+2.3.5. Executing PROC_ARST pass (detect async resets in processes).
+Found async reset \i_aresetn in `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:62$1'.
+
+2.3.6. Executing PROC_ROM pass (convert switches to ROMs).
+Converted 1 switch.
+<suppressed ~10 debug messages>
+
+2.3.7. Executing PROC_MUX pass (convert decision trees to multiplexers).
+Creating decoders for process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:242$81'.
+Creating decoders for process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:234$73'.
+     1/2: $assert$SevenSegmentDecoder.v:238$79_EN
+     2/2: $assert$SevenSegmentDecoder.v:236$77_EN
+Creating decoders for process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:224$63'.
+     1/4: $assert$SevenSegmentDecoder.v:229$71_EN
+     2/4: $assert$SevenSegmentDecoder.v:228$69_EN
+     3/4: $assert$SevenSegmentDecoder.v:227$67_EN
+     4/4: $assert$SevenSegmentDecoder.v:226$65_EN
+Creating decoders for process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:214$53'.
+     1/4: $assert$SevenSegmentDecoder.v:219$61_EN
+     2/4: $assert$SevenSegmentDecoder.v:218$59_EN
+     3/4: $assert$SevenSegmentDecoder.v:217$57_EN
+     4/4: $assert$SevenSegmentDecoder.v:216$55_EN
+Creating decoders for process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:204$43'.
+     1/4: $assert$SevenSegmentDecoder.v:209$51_EN
+     2/4: $assert$SevenSegmentDecoder.v:208$49_EN
+     3/4: $assert$SevenSegmentDecoder.v:207$47_EN
+     4/4: $assert$SevenSegmentDecoder.v:206$45_EN
+Creating decoders for process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:199$24'.
+Creating decoders for process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:189$20'.
+     1/1: $1\o_dp[0:0]
+Creating decoders for process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:160$18'.
+     1/2: $2\o_seg[6:0]
+     2/2: $1\o_seg[6:0]
+Creating decoders for process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:149$17'.
+     1/1: $1\current_char[4:0]
+Creating decoders for process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:108$16'.
+     1/4: $1\char3[4:0]
+     2/4: $1\char2[4:0]
+     3/4: $1\char1[4:0]
+     4/4: $1\char0[4:0]
+Creating decoders for process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:100$8'.
+Creating decoders for process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:87$6'.
+     1/1: $1\digit_en_raw[3:0]
+Creating decoders for process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:62$1'.
+     1/2: $0\refresh_counter[13:0]
+     2/2: $0\active_digit[1:0]
+
+2.3.8. Executing PROC_DLATCH pass (convert process syncs to latches).
+No latch inferred for signal `\SevenSegmentDecoder.\o_dp' from process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:189$20'.
+No latch inferred for signal `\SevenSegmentDecoder.\o_seg' from process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:160$18'.
+No latch inferred for signal `\SevenSegmentDecoder.\current_char' from process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:149$17'.
+No latch inferred for signal `\SevenSegmentDecoder.\char0' from process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:108$16'.
+No latch inferred for signal `\SevenSegmentDecoder.\char1' from process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:108$16'.
+No latch inferred for signal `\SevenSegmentDecoder.\char2' from process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:108$16'.
+No latch inferred for signal `\SevenSegmentDecoder.\char3' from process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:108$16'.
+No latch inferred for signal `\SevenSegmentDecoder.\digit_ones' from process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:100$8'.
+No latch inferred for signal `\SevenSegmentDecoder.\digit_tens' from process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:100$8'.
+No latch inferred for signal `\SevenSegmentDecoder.\digit_hundreds' from process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:100$8'.
+No latch inferred for signal `\SevenSegmentDecoder.\digit_thousands' from process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:100$8'.
+No latch inferred for signal `\SevenSegmentDecoder.\o_digit_en' from process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:87$6'.
+No latch inferred for signal `\SevenSegmentDecoder.\digit_en_raw' from process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:87$6'.
+
+2.3.9. Executing PROC_DFF pass (convert process syncs to FFs).
+Creating register for signal `\SevenSegmentDecoder.\refresh_counter' using process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:62$1'.
+  created $adff cell `$procdff$169' with positive edge clock and positive level reset.
+Creating register for signal `\SevenSegmentDecoder.\active_digit' using process `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:62$1'.
+  created $adff cell `$procdff$174' with positive edge clock and positive level reset.
+
+2.3.10. Executing PROC_MEMWR pass (convert process memory writes to cells).
+
+2.3.11. Executing PROC_CLEAN pass (remove empty switches from decision trees).
+Removing empty process `SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:242$81'.
+Found and cleaned up 1 empty switch in `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:234$73'.
+Removing empty process `SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:234$73'.
+Found and cleaned up 1 empty switch in `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:224$63'.
+Removing empty process `SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:224$63'.
+Found and cleaned up 1 empty switch in `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:214$53'.
+Removing empty process `SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:214$53'.
+Found and cleaned up 1 empty switch in `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:204$43'.
+Removing empty process `SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:204$43'.
+Removing empty process `SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:199$24'.
+Found and cleaned up 1 empty switch in `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:189$20'.
+Removing empty process `SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:189$20'.
+Found and cleaned up 2 empty switches in `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:160$18'.
+Removing empty process `SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:160$18'.
+Found and cleaned up 1 empty switch in `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:149$17'.
+Removing empty process `SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:149$17'.
+Found and cleaned up 1 empty switch in `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:108$16'.
+Removing empty process `SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:108$16'.
+Removing empty process `SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:100$8'.
+Found and cleaned up 1 empty switch in `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:87$6'.
+Removing empty process `SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:87$6'.
+Found and cleaned up 1 empty switch in `\SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:62$1'.
+Removing empty process `SevenSegmentDecoder.$proc$SevenSegmentDecoder.v:62$1'.
+Cleaned up 11 empty switches.
+
+2.3.12. Executing OPT_EXPR pass (perform const folding).
+Optimizing module SevenSegmentDecoder.
+<suppressed ~18 debug messages>
+
+2.4. Executing FUTURE pass.
+
+2.5. Executing OPT_EXPR pass (perform const folding).
+Optimizing module SevenSegmentDecoder.
+
+2.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \SevenSegmentDecoder..
+Removed 3 unused cells and 84 unused wires.
+<suppressed ~4 debug messages>
+
+2.7. Executing CHECK pass (checking for obvious problems).
+Checking module SevenSegmentDecoder...
+Found and reported 0 problems.
+
+2.8. Executing OPT pass (performing simple optimizations).
+
+2.8.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module SevenSegmentDecoder.
+
+2.8.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\SevenSegmentDecoder'.
+Computing hashes of 112 cells of `\SevenSegmentDecoder'.
+Finding duplicate cells in `\SevenSegmentDecoder'.
+Computing hashes of 86 cells of `\SevenSegmentDecoder'.
+Finding duplicate cells in `\SevenSegmentDecoder'.
+Computing hashes of 85 cells of `\SevenSegmentDecoder'.
+Finding duplicate cells in `\SevenSegmentDecoder'.
+<suppressed ~81 debug messages>
+Removed a total of 27 cells.
+
+2.8.3. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \SevenSegmentDecoder..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~46 debug messages>
+
+2.8.4. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \SevenSegmentDecoder.
+    New ctrl vector for $pmux cell $procmux$140: { $auto$opt_reduce.cc:135:opt_pmux$176 $procmux$148_CMP }
+    New ctrl vector for $pmux cell $procmux$135: $auto$opt_reduce.cc:135:opt_pmux$178
+  Optimizing cells in module \SevenSegmentDecoder.
+Performed a total of 2 changes.
+
+2.8.5. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\SevenSegmentDecoder'.
+Computing hashes of 87 cells of `\SevenSegmentDecoder'.
+Finding duplicate cells in `\SevenSegmentDecoder'.
+Computing hashes of 77 cells of `\SevenSegmentDecoder'.
+Finding duplicate cells in `\SevenSegmentDecoder'.
+<suppressed ~30 debug messages>
+Removed a total of 10 cells.
+
+2.8.6. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \SevenSegmentDecoder..
+Removed 0 unused cells and 37 unused wires.
+<suppressed ~1 debug messages>
+
+2.8.7. Executing OPT_EXPR pass (perform const folding).
+Optimizing module SevenSegmentDecoder.
+
+2.8.8. Rerunning OPT passes. (Maybe there is more to do..)
+
+2.8.9. Executing OPT_MUXTREE pass (detect dead branches in mux trees).
+Running muxtree optimizer on module \SevenSegmentDecoder..
+  Creating internal representation of mux trees.
+  Evaluating internal representation of mux trees.
+  Analyzing evaluation results.
+Removed 0 multiplexer ports.
+<suppressed ~26 debug messages>
+
+2.8.10. Executing OPT_REDUCE pass (consolidate $*mux and $reduce_* inputs).
+  Optimizing cells in module \SevenSegmentDecoder.
+Performed a total of 0 changes.
+
+2.8.11. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\SevenSegmentDecoder'.
+Computing hashes of 77 cells of `\SevenSegmentDecoder'.
+Finding duplicate cells in `\SevenSegmentDecoder'.
+Removed a total of 0 cells.
+
+2.8.12. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \SevenSegmentDecoder..
+
+2.8.13. Executing OPT_EXPR pass (perform const folding).
+Optimizing module SevenSegmentDecoder.
+
+2.8.14. Finished fast OPT passes. (There is nothing left to do.)
+
+2.9. Executing WREDUCE pass (reducing word size of cells).
+Removed top 28 bits (of 32) from port B of cell SevenSegmentDecoder.$mod$SevenSegmentDecoder.v:104$15 ($mod).
+Removed top 22 bits (of 32) from port B of cell SevenSegmentDecoder.$div$SevenSegmentDecoder.v:104$14 ($div).
+Removed top 28 bits (of 32) from port B of cell SevenSegmentDecoder.$mod$SevenSegmentDecoder.v:103$13 ($mod).
+Removed top 25 bits (of 32) from port B of cell SevenSegmentDecoder.$div$SevenSegmentDecoder.v:103$12 ($div).
+Removed top 28 bits (of 32) from port B of cell SevenSegmentDecoder.$mod$SevenSegmentDecoder.v:102$11 ($mod).
+Removed top 28 bits (of 32) from port B of cell SevenSegmentDecoder.$div$SevenSegmentDecoder.v:102$10 ($div).
+Removed top 28 bits (of 32) from port B of cell SevenSegmentDecoder.$mod$SevenSegmentDecoder.v:101$9 ($mod).
+Removed top 27 address bits (of 32) from memory init port SevenSegmentDecoder.$auto$mem.cc:351:emit$93 ($auto$proc_rom.cc:155:do_switch$91).
+Removed top 31 bits (of 32) from port A of cell SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$29 ($add).
+Removed top 31 bits (of 32) from port B of cell SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$29 ($add).
+Removed top 30 bits (of 32) from port Y of cell SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$29 ($add).
+Removed top 30 bits (of 32) from port A of cell SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$33 ($add).
+Removed top 31 bits (of 32) from port B of cell SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$33 ($add).
+Removed top 29 bits (of 32) from port Y of cell SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$33 ($add).
+Removed top 29 bits (of 32) from port A of cell SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$37 ($add).
+Removed top 31 bits (of 32) from port B of cell SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$37 ($add).
+Removed top 28 bits (of 32) from port Y of cell SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$37 ($add).
+Removed top 28 bits (of 32) from port A of cell SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$41 ($add).
+Removed top 31 bits (of 32) from port B of cell SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$41 ($add).
+Removed top 27 bits (of 32) from port Y of cell SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$41 ($add).
+Removed top 27 bits (of 32) from port A of cell SevenSegmentDecoder.$eq$SevenSegmentDecoder.v:200$42 ($eq).
+Removed top 31 bits (of 32) from port B of cell SevenSegmentDecoder.$eq$SevenSegmentDecoder.v:200$42 ($eq).
+Removed top 1 bits (of 5) from port B of cell SevenSegmentDecoder.$eq$SevenSegmentDecoder.v:207$48 ($eq).
+Removed top 1 bits (of 5) from port B of cell SevenSegmentDecoder.$eq$SevenSegmentDecoder.v:216$56 ($eq).
+Removed top 1 bits (of 5) from port B of cell SevenSegmentDecoder.$eq$SevenSegmentDecoder.v:217$58 ($eq).
+Removed top 1 bits (of 5) from port B of cell SevenSegmentDecoder.$eq$SevenSegmentDecoder.v:218$60 ($eq).
+Removed top 1 bits (of 5) from port B of cell SevenSegmentDecoder.$eq$SevenSegmentDecoder.v:226$66 ($eq).
+Removed top 1 bits (of 5) from port B of cell SevenSegmentDecoder.$eq$SevenSegmentDecoder.v:227$68 ($eq).
+Removed top 1 bits (of 5) from port B of cell SevenSegmentDecoder.$eq$SevenSegmentDecoder.v:228$70 ($eq).
+Removed top 1 bits (of 5) from port B of cell SevenSegmentDecoder.$eq$SevenSegmentDecoder.v:229$72 ($eq).
+Removed top 1 bits (of 3) from port B of cell SevenSegmentDecoder.$eq$SevenSegmentDecoder.v:235$74 ($eq).
+Removed top 1 bits (of 2) from port B of cell SevenSegmentDecoder.$procmux$132_CMP0 ($eq).
+Removed top 1 bits (of 5) from mux cell SevenSegmentDecoder.$procmux$135 ($mux).
+Removed top 1 bits (of 5) from mux cell SevenSegmentDecoder.$procmux$140 ($pmux).
+Removed top 1 bits (of 5) from mux cell SevenSegmentDecoder.$procmux$145 ($pmux).
+Removed top 2 bits (of 3) from port B of cell SevenSegmentDecoder.$procmux$151_CMP0 ($eq).
+Removed top 30 bits (of 32) from wire SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$29_Y.
+Removed top 31 bits (of 32) from wire SevenSegmentDecoder.$eqx$SevenSegmentDecoder.v:200$28_Y.
+Removed top 31 bits (of 32) from wire SevenSegmentDecoder.$eqx$SevenSegmentDecoder.v:200$40_Y.
+Removed top 28 bits (of 32) from wire SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$37_Y.
+Removed top 31 bits (of 32) from wire SevenSegmentDecoder.$eqx$SevenSegmentDecoder.v:200$36_Y.
+Removed top 27 bits (of 32) from wire SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$41_Y.
+Removed top 29 bits (of 32) from wire SevenSegmentDecoder.$add$SevenSegmentDecoder.v:200$33_Y.
+Removed top 31 bits (of 32) from wire SevenSegmentDecoder.$eqx$SevenSegmentDecoder.v:200$32_Y.
+Removed top 1 bits (of 5) from wire SevenSegmentDecoder.char3.
+Removed top 1 bits (of 5) from wire SevenSegmentDecoder.char2.
+Removed top 1 bits (of 5) from wire SevenSegmentDecoder.char1.
+
+2.10. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \SevenSegmentDecoder..
+Removed 0 unused cells and 11 unused wires.
+<suppressed ~1 debug messages>
+
+2.11. Executing MEMORY_COLLECT pass (generating $mem cells).
+
+2.12. Executing OPT pass (performing simple optimizations).
+
+2.12.1. Executing OPT_EXPR pass (perform const folding).
+Optimizing module SevenSegmentDecoder.
+
+2.12.2. Executing OPT_MERGE pass (detect identical cells).
+Finding identical cells in module `\SevenSegmentDecoder'.
+Computing hashes of 76 cells of `\SevenSegmentDecoder'.
+Finding duplicate cells in `\SevenSegmentDecoder'.
+Removed a total of 0 cells.
+
+2.12.3. Executing OPT_CLEAN pass (remove unused cells and wires).
+Finding unused cells or wires in module \SevenSegmentDecoder..
+
+2.12.4. Finished fast OPT passes.
+
+2.13. Executing SORT pass.
+
+2.14. Printing statistics.
+
+=== SevenSegmentDecoder ===
+
+        +----------Local Count, excluding submodules.
+        | 
+       65 wires
+      520 wire bits
+       19 public wires
+       89 public wire bits
+        7 ports
+       31 port bits
+       76 cells
+        6   $add
+        2   $adff
+       19   $check
+        3   $div
+       18   $eq
+        4   $eqx
+        1   $logic_and
+        1   $logic_not
+        1   $mem_v2
+        4   $mod
+        8   $mux
+        2   $not
+        5   $pmux
+        2   $reduce_or
+
+2.15. Executing CHECK pass (checking for obvious problems).
+Checking module SevenSegmentDecoder...
+Found and reported 0 problems.
+
+3. Executing HIERARCHY pass (managing design hierarchy).
+Attribute `top' found on module `SevenSegmentDecoder'. Setting top module to SevenSegmentDecoder.
+
+3.1. Analyzing design hierarchy..
+Top module:  \SevenSegmentDecoder
+
+3.2. Analyzing design hierarchy..
+Top module:  \SevenSegmentDecoder
+Removed 0 unused modules.
+Module SevenSegmentDecoder directly or indirectly contains formal properties -> setting "keep" attribute.
+
+4. Executing jny backend.
+
+5. Executing RTLIL backend.
+Output filename: ../model/design.il
+
+End of script. Logfile hash: f3f8937338, time: 0.04s, user: 0.02s, system: 0.04s, MEM: 36.80 MB peak
+Yosys 0.65 (git sha1 b85cad634, g++ 13.3.0-6ubuntu2~24.04.1 -fPIC -O3)
+Time spent: 17% 2x check (0 sec), 16% 5x opt_clean (0 sec), ...

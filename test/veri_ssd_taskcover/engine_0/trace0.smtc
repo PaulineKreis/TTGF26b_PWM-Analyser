@@ -1,0 +1,10 @@
+initial
+assume (= [_witness_.anyinit_procdff_169] #b00000000000000)
+assume (= [_witness_.anyinit_procdff_174] #b00)
+assume (= (select [$auto$proc_rom.cc:155:do_switch$91] #b00000) #b1111110)
+
+state 0
+assume (= [i_aresetn] false)
+assume (= [i_clk] false)
+assume (= [i_status] #b000)
+assume (= [i_value] #b00000000000000)

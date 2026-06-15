@@ -1,0 +1,15 @@
+SBY 22:03:59 [veri_cc_taskcover] Removing directory '/foss/designs/TTGF26b_PWM-Analyser/test/veri_cc_taskcover'.
+SBY 22:03:59 [veri_cc_taskcover] Copy '/foss/designs/TTGF26b_PWM-Analyser/test/../src/duty_cycle_counter.v' to '/foss/designs/TTGF26b_PWM-Analyser/test/veri_cc_taskcover/src/duty_cycle_counter.v'.
+SBY 22:03:59 [veri_cc_taskcover] Copy '/foss/designs/TTGF26b_PWM-Analyser/test/../src/falling_edge_detect.v' to '/foss/designs/TTGF26b_PWM-Analyser/test/veri_cc_taskcover/src/falling_edge_detect.v'.
+SBY 22:03:59 [veri_cc_taskcover] Copy '/foss/designs/TTGF26b_PWM-Analyser/test/../src/rising_edge_detect.v' to '/foss/designs/TTGF26b_PWM-Analyser/test/veri_cc_taskcover/src/rising_edge_detect.v'.
+SBY 22:03:59 [veri_cc_taskcover] Copy '/foss/designs/TTGF26b_PWM-Analyser/test/../src/shift_subtract_divider.v' to '/foss/designs/TTGF26b_PWM-Analyser/test/veri_cc_taskcover/src/shift_subtract_divider.v'.
+SBY 22:03:59 [veri_cc_taskcover] engine_0: smtbmc
+SBY 22:03:59 [veri_cc_taskcover] base: starting process "cd veri_cc_taskcover/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY 22:03:59 [veri_cc_taskcover] base: falling_edge_detect.v:3: ERROR: syntax error, unexpected TOK_MODULE
+SBY 22:03:59 [veri_cc_taskcover] base: finished (returncode=1)
+SBY 22:03:59 [veri_cc_taskcover] base: task failed. ERROR.
+SBY 22:03:59 [veri_cc_taskcover] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY 22:03:59 [veri_cc_taskcover] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:00 (0)
+SBY 22:03:59 [veri_cc_taskcover] summary: engine_0 (smtbmc) did not return a status
+SBY 22:03:59 [veri_cc_taskcover] summary: engine_0 did not produce any traces
+SBY 22:03:59 [veri_cc_taskcover] DONE (ERROR, rc=16)

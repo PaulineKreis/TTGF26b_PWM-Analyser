@@ -1,7 +1,7 @@
-# Testing Methodology
+# Running Test
 
-## Formal Verification Tests
+Testbench is simulated using cocotb which has been configured in the **Makefile**, to run the testbench ensure your environment has the correct version of python and cocotb installed as shown in **requirements.txt** and navigate to the **test/** directory and run the following command.
 
-1. The rising and falling edge modules are simple and self contained allowing for easy cover testing. In particular, one must only verify that the **tick** signal is high only when there is a rising / falling edge on the **level** signal. This can be done by viewing the stimulus waveform for fulfilling the cover condition.
-
-2. 
+```
+make
+```
