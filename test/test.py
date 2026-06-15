@@ -19,11 +19,9 @@ SevenSegmentDecoder is instantiated with COMMON_ANODE=1 (default), so:
     - o_seg      is active-low  (lit segment = 0)
 """
 
-from typing import ReadOnly
-
 import cocotb
 from cocotb.clock import Clock
-from cocotb.triggers import RisingEdge, FallingEdge, Timer, ClockCycles
+from cocotb.triggers import RisingEdge, FallingEdge, Timer, ClockCycles, ReadOnly
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Constants
