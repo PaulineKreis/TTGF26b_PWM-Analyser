@@ -19,6 +19,8 @@ SevenSegmentDecoder is instantiated with COMMON_ANODE=1 (default), so:
     - o_seg      is active-low  (lit segment = 0)
 """
 
+from typing import ReadOnly
+
 import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import RisingEdge, FallingEdge, Timer, ClockCycles
@@ -228,7 +230,7 @@ async def drive_pwm(dut, freq_hz: int, duty_percent: float, num_periods: int):
 
 async def setup(dut):
     """Start clock and apply reset."""
-    cocotb.start_soon(Clock(dut.i_clk, CLK_PERIOD_NS, units="ns").start())
+    cocotb.start_soon(Clock(dut.i_clk, CLK_PERIOD_NS, unit="ns").start())
 
     dut.i_aresetn.value     = 0
     dut.i_pwm.value         = 0
@@ -250,14 +252,14 @@ async def test_reset_behaviour(dut):
     While reset is asserted (i_aresetn=0), the 7-segment outputs should be
     in a defined idle state.  We just confirm the DUT does not produce X/Z.
     """
-    cocotb.start_soon(Clock(dut.i_clk, CLK_PERIOD_NS, units="ns").start())
+    cocotb.start_soon(Clock(dut.i_clk, CLK_PERIOD_NS, unit="ns").start())
 
     dut.i_aresetn.value = 1
     await ClockCycles(dut.i_clk, 5)
     dut.i_aresetn.value = 0
     dut.i_pwm.value     = 0
     dut.i_display_sel.value = 0
-    await ClockCycles(dut.i_clk, 100)
+    await ReadOnly
 
     # Check outputs are not X/Z
     for sig, name in [
