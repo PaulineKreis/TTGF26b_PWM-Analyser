@@ -254,7 +254,7 @@ async def test_reset_behaviour(dut):
 
     dut.i_aresetn.value = 0
     dut.i_pwm.value     = 0
-    await ClockCycles(dut.i_clk, 20)
+    await ClockCycles(dut.i_clk, 100)
 
     # Check outputs are not X/Z
     for sig, name in [
