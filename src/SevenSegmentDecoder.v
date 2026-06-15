@@ -97,11 +97,18 @@ always @(*) begin   // combinational logic, therefore *
 end
 
 // split input value into decimal digits
-always @(*) begin
-    digit_ones      = i_value % 10;
-    digit_tens      = (i_value / 10) % 10;
-    digit_hundreds  = (i_value / 100) % 10;
-    digit_thousands = (i_value / 1000) % 10;
+always @(posedge i_clk or negedge i_aresetn) begin
+    if (!i_aresetn) begin
+        digit_ones      <= 0; 
+        digit_tens      <= 0; 
+        digit_hundreds  <= 0; 
+        digit_thousands <= 0;
+    end else begin
+        digit_ones      <= i_value % 10;
+        digit_tens      <= (i_value / 10) % 10;
+        digit_hundreds  <= (i_value / 100) % 10;
+        digit_thousands <= (i_value / 1000) % 10;
+    end
 end
 
 // prepare display characters
