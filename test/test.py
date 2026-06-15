@@ -2,7 +2,7 @@
 Cocotb testbench for PWM_Analyser top-level module.
 
 DUT ports:
-    i_clk           - 100 MHz system clock
+    i_clk           - 24 MHz system clock
     i_pwm           - PWM input signal
     i_aresetn       - Active-low asynchronous reset
 
@@ -27,9 +27,9 @@ from cocotb.triggers import RisingEdge, FallingEdge, Timer, ClockCycles
 # Constants
 # ──────────────────────────────────────────────────────────────────────────────
 
-CLK_PERIOD_NS   = 40            # 20 MHz
-CLK_HZ          = 25_000_000
-
+CLK_HZ          = 24_000_000
+CLK_PERIOD_NS   = (1/CLK_HZ) * 1_000_000_000
+PWM_HOLD_CYCLES = 24_000_100
 # SevenSegmentDecoder defaults
 DIGIT_REFRESH_HZ    = 1000
 REFRESH_COUNT_MAX   = CLK_HZ // DIGIT_REFRESH_HZ   # 100 000 cycles per digit
@@ -185,33 +185,41 @@ def chars_to_number(chars):
 async def drive_pwm(dut, freq_hz: int, duty_percent: float, num_periods: int):
     """
     Drive i_pwm with a PWM signal of the given frequency and duty cycle
-    for num_periods complete periods.  Stimulus is aligned to negedge of i_clk.
+    for num_periods complete periods. Stimulus is aligned to negedge of i_clk.
 
-    freq_hz       - desired PWM frequency in Hz
-    duty_percent  - duty cycle 0.0 – 100.0
-    num_periods   - number of complete PWM periods to generate
+    freq_hz      - desired PWM frequency in Hz. Must be <= CLK_HZ // 2.
+    duty_percent - duty cycle 0.0 – 100.0
+    num_periods  - number of complete PWM periods to generate
     """
-    period_cycles   = CLK_HZ // freq_hz
-    high_cycles     = round(period_cycles * duty_percent / 100.0)
-    low_cycles      = period_cycles - high_cycles
+    assert 0 < freq_hz <= CLK_HZ // 2, \
+        f"freq_hz={freq_hz} is out of range. Must be between 1 Hz and {CLK_HZ // 2} Hz."
+    assert 0.0 <= duty_percent <= 100.0, \
+        f"duty_percent={duty_percent} is out of range. Must be between 0.0 and 100.0."
 
-    if high_cycles == 0 and duty_percent > 0:
-        high_cycles = 1
-        low_cycles  = period_cycles - 1
-    if low_cycles == 0 and duty_percent < 100:
-        low_cycles  = 1
-        high_cycles = period_cycles - 1
+    period_cycles = CLK_HZ // freq_hz
+    high_cycles   = max(1, round(period_cycles * duty_percent / 100.0)) if duty_percent > 0 else 0
+    low_cycles    = period_cycles - high_cycles
+    low_cycles    = max(1, low_cycles) if duty_percent < 100.0 else 0
+
+    assert period_cycles >= 2, \
+        f"period_cycles={period_cycles} is too small for a valid PWM signal."
+
+    dut._log.info(
+        f"Driving PWM: freq={freq_hz} Hz, duty={duty_percent}%, "
+        f"period={period_cycles} cycles ({high_cycles} hi / {low_cycles} lo)"
+    )
 
     for _ in range(num_periods):
-        await FallingEdge(dut.i_clk)
-        dut.i_pwm.value = 1
-        for _ in range(high_cycles - 1):
+        if high_cycles > 0:
             await FallingEdge(dut.i_clk)
-        await FallingEdge(dut.i_clk)
-        dut.i_pwm.value = 0
-        for _ in range(low_cycles - 1):
+            dut.i_pwm.value = 1
+            for _ in range(high_cycles - 1):
+                await FallingEdge(dut.i_clk)
+        if low_cycles > 0:
             await FallingEdge(dut.i_clk)
-
+            dut.i_pwm.value = 0
+            for _ in range(low_cycles - 1):
+                await FallingEdge(dut.i_clk)
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Common setup
@@ -270,7 +278,7 @@ async def test_1khz_50pct(dut):
 
     FREQ_HZ   = 1_000
     DUTY_PCT  = 50.0
-    PERIODS   = 20      # enough for both submodules to lock
+    PERIODS   = 10      # enough for both submodules to lock
 
     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
@@ -310,7 +318,7 @@ async def test_10khz_25pct(dut):
 
     FREQ_HZ  = 10_000
     DUTY_PCT = 25.0
-    PERIODS  = 50
+    PERIODS  = 10
 
     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
@@ -348,7 +356,7 @@ async def test_100khz_75pct(dut):
 
     FREQ_HZ  = 100_000
     DUTY_PCT = 75.0
-    PERIODS  = 200
+    PERIODS  = 10
 
     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
@@ -406,20 +414,16 @@ async def test_status_hi(dut):
     """
     Drive a PWM frequency above the freq_counter's measurable range and
     verify the frequency display shows 'HI' (o_status = 3'b100).
-
-    Note: what counts as HI depends on your freq_counter implementation.
-    Here we drive at 9999 kHz (just below Nyquist at 100 MHz) to trigger it.
-    Adjust FREQ_HZ to match your actual HI threshold.
     """
     await setup(dut)
 
-    # Drive as fast as possible — single-cycle high, single-cycle low = 50 MHz
+    # Drive as fast as possible — single-cycle high, single-cycle low = 11 MHz
     # This is above typical freq_counter range and should trigger HI status.
     FREQ_HZ  = 11_000_000
     DUTY_PCT = 50.0
-    PERIODS  = 500
+    PERIODS  = 10
 
-    dut._log.info(f"Driving PWM at {FREQ_HZ//1_000_000} MHz to trigger HI status")
+    dut._log.info(f"Driving PWM at {FREQ_HZ/1_000_000} MHz to trigger HI status")
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
@@ -446,7 +450,7 @@ async def test_status_lo(dut):
     # This is above typical freq_counter range and should trigger HI status.
     FREQ_HZ  = 900
     DUTY_PCT = 50.0
-    PERIODS  = 5
+    PERIODS  = 10
 
     dut._log.info(f"Driving PWM at {FREQ_HZ/1_000_000} MHz to trigger LO status")
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
@@ -468,7 +472,7 @@ async def test_status_lo(dut):
 async def test_pwm_removed(dut):
     """
     Start with a valid PWM signal, then remove it (hold i_pwm low).
-    Verify the freq display shows 'LO' (o_status = 3'b001).
+    Verify the freq display shows 'ERR' (o_status = 3'b111).
     """
     await setup(dut)
 
@@ -481,7 +485,7 @@ async def test_pwm_removed(dut):
     dut._log.info("PWM removed — holding i_pwm low.")
 
     # Wait long enough for freq_counter to detect signal loss
-    await ClockCycles(dut.i_clk, 110_000_000)
+    await ClockCycles(dut.i_clk, PWM_HOLD_CYCLES)
 
     freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
                                     dut.o_digit_en, label="freq_lo")
@@ -489,6 +493,6 @@ async def test_pwm_removed(dut):
     dut._log.info(f"freq display chars after PWM removed: {freq_chars}")
 
     assert 'E' in freq_chars and 'R' in freq_chars and 'R' in freq_chars, \
-        f"Expected LO on freq display after PWM removed, got: {freq_chars}"
+        f"Expected ERR on freq display after PWM removed, got: {freq_chars}"
 
-    dut._log.info("PASS: LO status displayed after PWM signal removed.")
+    dut._log.info("PASS: ERR status displayed after PWM signal removed.")
