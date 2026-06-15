@@ -257,7 +257,7 @@ async def test_reset_behaviour(dut):
     dut.i_aresetn.value = 0
     dut.i_pwm.value     = 0
     dut.i_display_sel.value = 0
-    await ReadOnly
+    await ReadOnly()
 
     # Check outputs are not X/Z
     for sig, name in [
