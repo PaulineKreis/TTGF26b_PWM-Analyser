@@ -1,9 +1,7 @@
-`timescale 1ns / 1ps
-
 module freq_counter # (
-    parameter CLK_FREQ = 50_000_000,
+    parameter CLK_FREQ = 25_000_000,
     parameter RESOLVE_WAIT_CYCLE = 5,
-    parameter WATCHDOG_TICK = 50_000_000
+    parameter WATCHDOG_TICK = 25_000_000
 ) (
     input wire i_pwm,
     input wire i_clk,
