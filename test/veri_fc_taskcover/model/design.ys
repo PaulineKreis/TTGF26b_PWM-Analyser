@@ -1,8 +1,0 @@
-# running in veri_fc_taskcover/src/
-read -formal rising_edge_detect.v
-read -formal freq_counter.v
-prep -top freq_counter -chparam WATCHDOG_TICK 10
-hierarchy -smtcheck
-rename -witness
-write_jny -no-connections ../model/design.json
-write_rtlil ../model/design.il

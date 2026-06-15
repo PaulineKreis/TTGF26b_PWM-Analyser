@@ -1,7 +1,0 @@
-# running in veri_cc_taskcover/src/
-read -formal duty_cycle_counter.v
-prep -top duty_cycle_counter
-hierarchy -smtcheck
-rename -witness
-write_jny -no-connections ../model/design.json
-write_rtlil ../model/design.il
