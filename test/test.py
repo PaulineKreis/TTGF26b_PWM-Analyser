@@ -27,9 +27,9 @@ from cocotb.triggers import RisingEdge, FallingEdge, Timer, ClockCycles
 # Constants
 # ──────────────────────────────────────────────────────────────────────────────
 
-CLK_PERIOD_NS   = 100            # 20 MHz
-CLK_HZ          = 10_000_000
-PWM_HOLD_CYCLES = 10_000_100
+CLK_PERIOD_NS   = 20            # 50 MHz
+CLK_HZ          = 50_000_000
+PWM_HOLD_CYCLES = 50_000_100
 # SevenSegmentDecoder defaults
 DIGIT_REFRESH_HZ    = 1000
 REFRESH_COUNT_MAX   = CLK_HZ // DIGIT_REFRESH_HZ   # 100 000 cycles per digit
@@ -253,7 +253,7 @@ async def test_reset_behaviour(dut):
 
     dut.i_aresetn.value = 0
     dut.i_pwm.value     = 0
-    dut.i_display_sel.value = 1
+    dut.i_display_sel.value = 0
     await ClockCycles(dut.i_clk, 20)
 
     # Check outputs are not X/Z

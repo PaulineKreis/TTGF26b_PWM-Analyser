@@ -1,9 +1,9 @@
 `timescale 1ns / 1ps
 
 module freq_counter # (
-    parameter CLK_FREQ = 10_000_000,
+    parameter CLK_FREQ = 50_000_000,
     parameter RESOLVE_WAIT_CYCLE = 5,
-    parameter WATCHDOG_TICK = 10_000_000
+    parameter WATCHDOG_TICK = 50_000_000
 ) (
     input wire i_pwm,
     input wire i_clk,
@@ -78,7 +78,7 @@ end
 // REGISTERED OUTPUT CALCULATION
 
 localparam CLK_FREQ_KHZ = CLK_FREQ / 1000;
-localparam HI_THRESHOLD = CLK_FREQ_KHZ / (2499 + 1); // compile time constant (= 4 for 10 MHz)
+localparam HI_THRESHOLD = CLK_FREQ_KHZ / (9999 + 1); // compile time constant (= 4 for 10 MHz)
 
 // pulse generation: start_pulse is high for exactly one clock
 // when counter_cycle first reaches RESOLVE_WAIT_CYCLE
@@ -116,7 +116,7 @@ assign o_freq_khz = freq[13:0];
 always @(*) begin
     if (watchdog_cntr == WATCHDOG_TICK - 1)
         o_status <= 3'b111;
-    else if (freq > 2500)
+    else if (freq > 9999)
         o_status <= 3'b100;
     else if (freq == 0)
         o_status <= 3'b001;
@@ -150,7 +150,7 @@ rising_edge_detect pwm_re
     // R1: when status is normal, frequency must be within valid range 1 to 9999 kHz
     always @(*) begin
         if (o_status == 3'b000)
-            assert(o_freq_khz >= 1 && o_freq_khz <= 2500);
+            assert(o_freq_khz >= 1 && o_freq_khz <= 9999);
     end
 
     // R1/R5: all four status values must be reachable
