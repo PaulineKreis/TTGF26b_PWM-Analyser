@@ -1,6 +1,6 @@
 module duty_cycle_counter # (
     parameter CLK_FREQ = 25_000_000,
-    parameter WATCHDOG_TICK = CLK_FREQ
+    parameter WATCHDOG_TICK = CLK_FREQ,
 
     input wire i_pwm,
     input wire i_clk,
