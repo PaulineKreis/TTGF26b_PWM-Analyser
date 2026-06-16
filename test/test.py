@@ -29,9 +29,9 @@ from cocotb.triggers import RisingEdge, FallingEdge, Timer, ClockCycles
 # Constants
 # ──────────────────────────────────────────────────────────────────────────────
 
-CLK_PERIOD_NS   = 20            # 25 MHz
-CLK_HZ          = 50_000_000
-PWM_HOLD_CYCLES = 50_000_100
+CLK_HZ          = 40_000_000
+CLK_PERIOD_NS   = 1_000_000_000 // CLK_HZ
+PWM_HOLD_CYCLES = 40_000_100
 MS_100_WAIT     = CLK_HZ // 10
 # SevenSegmentDecoder defaults
 DIGIT_REFRESH_HZ    = 1000

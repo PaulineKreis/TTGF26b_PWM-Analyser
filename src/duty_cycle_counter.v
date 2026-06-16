@@ -1,6 +1,6 @@
 module duty_cycle_counter # (
-    parameter CLK_FREQ = 50_000_000,
-    parameter WATCHDOG_TICK = 50_000_000
+    parameter CLK_FREQ = 40_000_000,
+    parameter WATCHDOG_TICK = 40_000_000
 ) (
     input wire i_pwm,
     input wire i_clk,
@@ -90,7 +90,7 @@ shift_subtract_divider #(.WIDTH_A(24), .WIDTH_B(17)) div_inst (
 //     if (watchdog_cntr == WATCHDOG_TICK - 1) begin
 //         if (pwm)
 //             o_duty_cycle = 7'd100;
-//         else 
+//         else
 //             o_duty_cycle = 7'd0;
 //     end else begin
 //         o_duty_cycle = duty_cycle_held;
