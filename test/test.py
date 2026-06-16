@@ -8,14 +8,16 @@ DUT ports:
 
     o_seg_dc        - 7-segment pattern for duty cycle display
     o_dp_dc         - Decimal point for duty cycle display
-    o_digit_en_dc   - Digit enable for duty cycle display (active-low, common anode)
+    o_digit_en_dc   - Digit enable for duty cycle display (active-high; confirmed on FPGA hardware)
 
     o_seg_freq      - 7-segment pattern for frequency display
     o_dp_freq       - Decimal point for frequency display
-    o_digit_en_freq - Digit enable for frequency display (active-low, common anode)
+    o_digit_en_freq - Digit enable for frequency display (active-high; confirmed on FPGA hardware)
 
-SevenSegmentDecoder is instantiated with COMMON_ANODE=1 (default), so:
-    - o_digit_en is active-low  (enabled digit = 0)
+SevenSegmentDecoder is instantiated with COMMON_ANODE=1 (default).
+NOTE: on real common-anode hardware, the digit-enable pins are NOT inverted
+(only the segment lines are). This was confirmed via FPGA testing, so:
+    - o_digit_en is active-high (enabled digit = 1)
     - o_seg      is active-low  (lit segment = 0)
 """
 
@@ -119,12 +121,12 @@ def decode_segment(seg_val: int):
 
 def sample_display(digit_en, seg):
     """
-    Given the current digit_en (active-low 4-bit) and seg (active-low 7-bit),
+    Given the current digit_en (active-high 4-bit) and seg (active-low 7-bit),
     return (active_digit_index, decoded_character).
 
     digit_en bit positions: [3]=leftmost, [0]=rightmost
     """
-    inv_en = (digit_en) & 0xF      # invert to find which digit is asserted
+    inv_en = digit_en & 0xF
     if inv_en == 0:
         return None, None           # no digit enabled
     digit_idx = inv_en.bit_length() - 1  # 0=rightmost ... 3=leftmost
@@ -147,11 +149,11 @@ async def read_display(dut, seg_signal, dp_signal, digit_en_signal, label=""):
         await RisingEdge(dut.i_clk)
         digit_en = digit_en_signal.value.integer
         seg      = seg_signal.value.integer
-        inv_en   = (~digit_en) & 0xF
-        if inv_en and inv_en not in seen:
-            idx = inv_en.bit_length() - 1
+        en_mask  = digit_en & 0xF
+        if en_mask and en_mask not in seen:
+            idx = en_mask.bit_length() - 1
             chars[idx] = decode_segment(seg & 0x7F)
-            seen.add(inv_en)
+            seen.add(en_mask)
         if len(seen) == 4:
             break
 
@@ -223,7 +225,9 @@ async def drive_pwm(dut, freq_hz: int, duty_percent: float, num_periods: int):
             for _ in range(low_cycles - 1):
                 await FallingEdge(dut.i_clk)
 
-    
+    dut._log.info("PWM driven, waiting for SAMPLE AND HOLD")
+
+    await ClockCycles(dut.i_clk, MS_100_WAIT)
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Common setup
@@ -366,8 +370,7 @@ async def test_100khz_75pct(dut):
     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
-    #dut._log.info("PWM driven, waiting for SAMPLE AND HOLD")
-    #await ClockCycles(dut.i_clk, MS_100_WAIT)
+
     freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
                                     dut.o_digit_en, label="freq")
 
