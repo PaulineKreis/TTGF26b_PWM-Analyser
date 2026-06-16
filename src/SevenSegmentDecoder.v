@@ -97,17 +97,110 @@ always @(*) begin   // combinational logic, therefore *
 end
 
 // split input value into decimal digits
+// OLD: constant division/modulo (deep combinational path)
+// always @(posedge i_clk or negedge i_aresetn) begin
+//     if (!i_aresetn) begin
+//         digit_ones      <= 0;
+//         digit_tens      <= 0;
+//         digit_hundreds  <= 0;
+//         digit_thousands <= 0;
+//     end else begin
+//         digit_ones      <= i_value % 10;
+//         digit_tens      <= (i_value / 10) % 10;
+//         digit_hundreds  <= (i_value / 100) % 10;
+//         digit_thousands <= (i_value / 1000) % 10;
+//     end
+// end
+
+// NEW: extract decimal digits by dividing by 10 four times, using the
+// existing (verified) shift_subtract_divider. The remainder of each
+// division is the decimal digit; we compute it as dividend - quotient*10
+// so the divider module itself stays unchanged.
+
+// divider interface
+reg  [13:0] bcd_dividend;
+wire [13:0] bcd_quotient;
+reg         bcd_div_start;
+wire        bcd_div_busy;
+wire        bcd_div_done;
+
+shift_subtract_divider #(.WIDTH_A(14), .WIDTH_B(4)) bcd_div (
+    .clk(i_clk),
+    .resetn(i_aresetn),
+    .start(bcd_div_start),
+    .dividend(bcd_dividend),
+    .divisor(4'd10),
+    .quotient(bcd_quotient),
+    .busy(bcd_div_busy),
+    .done(bcd_div_done)
+);
+
+// remainder of the just-finished division (= decimal digit)
+wire [13:0] bcd_remainder = bcd_dividend - (bcd_quotient * 4'd10);
+
+// latch i_value and start a new conversion whenever it changes
+reg [13:0] value_prev;
+wire value_changed = (i_value != value_prev);
+
+// conversion state machine
+reg [2:0] bcd_state;
+localparam BS_IDLE = 3'd0,
+           BS_D0   = 3'd1,
+           BS_D1   = 3'd2,
+           BS_D2   = 3'd3,
+           BS_D3   = 3'd4;
+
 always @(posedge i_clk or negedge i_aresetn) begin
     if (!i_aresetn) begin
-        digit_ones      <= 0; 
-        digit_tens      <= 0; 
-        digit_hundreds  <= 0; 
+        digit_ones      <= 0;
+        digit_tens      <= 0;
+        digit_hundreds  <= 0;
         digit_thousands <= 0;
+        bcd_dividend    <= 0;
+        bcd_div_start   <= 0;
+        bcd_state       <= BS_IDLE;
+        value_prev      <= 0;
     end else begin
-        digit_ones      <= i_value % 10;
-        digit_tens      <= (i_value / 10) % 10;
-        digit_hundreds  <= (i_value / 100) % 10;
-        digit_thousands <= (i_value / 1000) % 10;
+        bcd_div_start <= 0;       // default: one-cycle pulse
+        value_prev    <= i_value;
+
+        case (bcd_state)
+            BS_IDLE: begin
+                if (value_changed) begin
+                    bcd_dividend  <= i_value;
+                    bcd_div_start <= 1;
+                    bcd_state     <= BS_D0;
+                end
+            end
+
+            BS_D0: if (bcd_div_done) begin
+                digit_ones    <= bcd_remainder[3:0];
+                bcd_dividend  <= bcd_quotient;
+                bcd_div_start <= 1;
+                bcd_state     <= BS_D1;
+            end
+
+            BS_D1: if (bcd_div_done) begin
+                digit_tens    <= bcd_remainder[3:0];
+                bcd_dividend  <= bcd_quotient;
+                bcd_div_start <= 1;
+                bcd_state     <= BS_D2;
+            end
+
+            BS_D2: if (bcd_div_done) begin
+                digit_hundreds <= bcd_remainder[3:0];
+                bcd_dividend   <= bcd_quotient;
+                bcd_div_start  <= 1;
+                bcd_state      <= BS_D3;
+            end
+
+            BS_D3: if (bcd_div_done) begin
+                digit_thousands <= bcd_remainder[3:0];
+                bcd_state       <= BS_IDLE;
+            end
+
+            default: bcd_state <= BS_IDLE;
+        endcase
     end
 end
 
