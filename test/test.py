@@ -277,82 +277,82 @@ async def test_reset_behaviour(dut):
     dut._log.info("PASS: No X/Z on outputs during reset.")
 
 
-# @cocotb.test()
-# async def test_1khz_50pct(dut):
-#     """
-#     1 kHz PWM, 50% duty cycle.
-#     Expected:  freq display → 1, dc display → 50 (with decimal point on digit 2)
-#     """
-#     await setup(dut)
+@cocotb.test()
+async def test_1khz_50pct(dut):
+    """
+    1 kHz PWM, 50% duty cycle.
+    Expected:  freq display → 1, dc display → 50 (with decimal point on digit 2)
+    """
+    await setup(dut)
 
-#     FREQ_HZ   = 1_000
-#     DUTY_PCT  = 50.0
-#     PERIODS   = 20      # enough for both submodules to lock
+    FREQ_HZ   = 1_000
+    DUTY_PCT  = 50.0
+    PERIODS   = 20      # enough for both submodules to lock
 
-#     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
-#     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
+    dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
+    await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
 
-#     # Let displays settle for one full rotation
-#     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+    # Let displays settle for one full rotation
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
-#     freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
-#                                     dut.o_digit_en, label="freq")
+    freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en, label="freq")
 
-#     dut.i_display_sel.value = 1
-#     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
-#     dc_chars   = await read_display(dut, dut.o_seg, dut.o_dp,
-#                                     dut.o_digit_en,   label="dc")
-#     dut.i_display_sel.value = 0
+    dut.i_display_sel.value = 1
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+    dc_chars   = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en,   label="dc")
+    dut.i_display_sel.value = 0
 
-#     freq_val = chars_to_number(freq_chars)
-#     dc_val   = chars_to_number(dc_chars)
+    freq_val = chars_to_number(freq_chars)
+    dc_val   = chars_to_number(dc_chars)
 
-#     dut._log.info(f"Decoded freq={freq_val} kHz, dc={dc_val} (×0.1 %)")
+    dut._log.info(f"Decoded freq={freq_val} kHz, dc={dc_val} (×0.1 %)")
 
-#     assert freq_val == 1, \
-#         f"Expected freq=1 kHz, got {freq_val}"
-#     assert dc_val == 50, \
-#         f"Expected dc=50 (50.0%), got {dc_val}"
+    assert freq_val == 1, \
+        f"Expected freq=1 kHz, got {freq_val}"
+    assert dc_val == 50, \
+        f"Expected dc=50 (50.0%), got {dc_val}"
 
-#     dut._log.info("PASS: 1 kHz, 50%")
+    dut._log.info("PASS: 1 kHz, 50%")
 
 
-# @cocotb.test()
-# async def test_10khz_25pct(dut):
-#     """
-#     10 kHz PWM, 25% duty cycle.
-#     Expected:  freq display → 10, dc display → 25
-#     """
-#     await setup(dut)
+@cocotb.test()
+async def test_10khz_25pct(dut):
+    """
+    10 kHz PWM, 25% duty cycle.
+    Expected:  freq display → 10, dc display → 25
+    """
+    await setup(dut)
 
-#     FREQ_HZ  = 10_000
-#     DUTY_PCT = 25.0
-#     PERIODS  = 20
+    FREQ_HZ  = 10_000
+    DUTY_PCT = 25.0
+    PERIODS  = 20
 
-#     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
-#     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
-#     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+    dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
+    await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
-#     freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
-#                                     dut.o_digit_en, label="freq")
+    freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en, label="freq")
 
-#     dut.i_display_sel.value = 1
-#     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
-#     dc_chars   = await read_display(dut, dut.o_seg, dut.o_dp,
-#                                     dut.o_digit_en,   label="dc")
-#     dut.i_display_sel.value = 0
+    dut.i_display_sel.value = 1
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+    dc_chars   = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en,   label="dc")
+    dut.i_display_sel.value = 0
 
-#     freq_val = chars_to_number(freq_chars)
-#     dc_val   = chars_to_number(dc_chars)
+    freq_val = chars_to_number(freq_chars)
+    dc_val   = chars_to_number(dc_chars)
 
-#     dut._log.info(f"Decoded freq={freq_val} kHz, dc={dc_val}")
+    dut._log.info(f"Decoded freq={freq_val} kHz, dc={dc_val}")
 
-#     assert freq_val == 10, \
-#         f"Expected freq=10 kHz, got {freq_val}"
-#     assert dc_val == 25, \
-#         f"Expected dc=25 (25%), got {dc_val}"
+    assert freq_val == 10, \
+        f"Expected freq=10 kHz, got {freq_val}"
+    assert dc_val == 25, \
+        f"Expected dc=25 (25%), got {dc_val}"
 
-#     dut._log.info("PASS: 10 kHz, 25%")
+    dut._log.info("PASS: 10 kHz, 25%")
 
 
 @cocotb.test()
@@ -393,115 +393,115 @@ async def test_100khz_75pct(dut):
     dut._log.info("PASS: 100 kHz, 75%")
 
 
-# @cocotb.test()
-# async def test_dc_edge_cases(dut):
-#     """
-#     Check that near-0% and near-100% duty cycles produce sensible results
-#     and do not cause X/Z on any output.
-#     """
-#     await setup(dut)
+@cocotb.test()
+async def test_dc_edge_cases(dut):
+    """
+    Check that near-0% and near-100% duty cycles produce sensible results
+    and do not cause X/Z on any output.
+    """
+    await setup(dut)
 
-#     for duty in [1.0, 99.0]:
-#         dut._log.info(f"Testing edge duty cycle: {duty}%")
-#         await drive_pwm(dut, 10_000, duty, 100)
-#         await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+    for duty in [1.0, 99.0]:
+        dut._log.info(f"Testing edge duty cycle: {duty}%")
+        await drive_pwm(dut, 10_000, duty, 100)
+        await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
-#         for sig, name in [
-#             (dut.o_seg,        "o_seg_dc"),
-#             (dut.o_digit_en,   "o_digit_en_dc"),
-#             (dut.o_seg,      "o_seg_freq"),
-#             (dut.o_digit_en, "o_digit_en_freq"),
-#         ]:
-#             assert sig.value.is_resolvable, \
-#                 f"{name} contains X/Z at {duty}% duty: {sig.value}"
+        for sig, name in [
+            (dut.o_seg,        "o_seg_dc"),
+            (dut.o_digit_en,   "o_digit_en_dc"),
+            (dut.o_seg,      "o_seg_freq"),
+            (dut.o_digit_en, "o_digit_en_freq"),
+        ]:
+            assert sig.value.is_resolvable, \
+                f"{name} contains X/Z at {duty}% duty: {sig.value}"
 
-#         dut._log.info(f"PASS: {duty}% duty — no X/Z on outputs.")
-
-
-# @cocotb.test()
-# async def test_status_hi(dut):
-#     """
-#     Drive a PWM frequency above the freq_counter's measurable range and
-#     verify the frequency display shows 'HI' (o_status = 3'b100).
-#     """
-#     await setup(dut)
-
-#     # Drive as fast as possible — single-cycle high, single-cycle low = 50 MHz
-#     # This is above typical freq_counter range and should trigger HI status.
-#     FREQ_HZ  = 11_000_000
-#     DUTY_PCT = 50.0
-#     PERIODS  = 10
-
-#     dut._log.info(f"Driving PWM at {FREQ_HZ/1_000_000} MHz to trigger HI status")
-#     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
-#     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
-
-#     freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
-#                                     dut.o_digit_en, label="freq_hi")
-
-#     dut._log.info(f"freq display chars: {freq_chars}")
-
-#     # Expect 'H' and 'I' somewhere in the display
-#     assert 'H' in freq_chars and ('I' in freq_chars or 1 in freq_chars), \
-#         f"Expected HI or H1 on freq display for out-of-range input, got: {freq_chars}"
-
-#     dut._log.info("PASS: HI status displayed for over-range frequency.")
-
-# @cocotb.test()
-# async def test_status_lo(dut):
-#     """
-#     Drive a PWM frequency below the freq_counter's measurable range and
-#     verify the frequency display shows 'LO' (o_status = 3'b001).
-#     """
-#     await setup(dut)
-
-#     # Drive as fast as possible — single-cycle high, single-cycle low = 50 MHz
-#     # This is above typical freq_counter range and should trigger HI status.
-#     FREQ_HZ  = 900
-#     DUTY_PCT = 50.0
-#     PERIODS  = 10
-
-#     dut._log.info(f"Driving PWM at {FREQ_HZ/1_000_000} MHz to trigger LO status")
-#     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
-#     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
-
-#     freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
-#                                     dut.o_digit_en, label="freq_hi")
-
-#     dut._log.info(f"freq display chars: {freq_chars}")
-
-#     # Expect 'H' and 'I' somewhere in the display
-#     assert 'L' in freq_chars and ('O' in freq_chars or 0 in freq_chars), \
-#         f"Expected LO on freq display for out-of-range input, got: {freq_chars}"
-
-#     dut._log.info("PASS: LO status displayed for over-range frequency.")
+        dut._log.info(f"PASS: {duty}% duty — no X/Z on outputs.")
 
 
-# @cocotb.test()
-# async def test_pwm_removed(dut):
-#     """
-#     Start with a valid PWM signal, then remove it (hold i_pwm low).
-#     Verify the freq display shows 'ERR' (o_status = 3'b111).
-#     """
-#     await setup(dut)
+@cocotb.test()
+async def test_status_hi(dut):
+    """
+    Drive a PWM frequency above the freq_counter's measurable range and
+    verify the frequency display shows 'HI' (o_status = 3'b100).
+    """
+    await setup(dut)
 
-#     # First establish a valid signal
-#     await drive_pwm(dut, 10_000, 50.0, 3)
-#     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+    # Drive as fast as possible — single-cycle high, single-cycle low = 50 MHz
+    # This is above typical freq_counter range and should trigger HI status.
+    FREQ_HZ  = 11_000_000
+    DUTY_PCT = 50.0
+    PERIODS  = 10
 
-#     # Now remove the PWM signal
-#     dut.i_pwm.value = 0
-#     dut._log.info("PWM removed — holding i_pwm low.")
+    dut._log.info(f"Driving PWM at {FREQ_HZ/1_000_000} MHz to trigger HI status")
+    await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
 
-#     # Wait long enough for freq_counter to detect signal loss
-#     await ClockCycles(dut.i_clk, PWM_HOLD_CYCLES)
+    freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en, label="freq_hi")
 
-#     freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
-#                                     dut.o_digit_en, label="freq_lo")
+    dut._log.info(f"freq display chars: {freq_chars}")
 
-#     dut._log.info(f"freq display chars after PWM removed: {freq_chars}")
+    # Expect 'H' and 'I' somewhere in the display
+    assert 'H' in freq_chars and ('I' in freq_chars or 1 in freq_chars), \
+        f"Expected HI or H1 on freq display for out-of-range input, got: {freq_chars}"
 
-#     assert 'E' in freq_chars and 'R' in freq_chars and 'R' in freq_chars, \
-#         f"Expected ERR on freq display after PWM removed, got: {freq_chars}"
+    dut._log.info("PASS: HI status displayed for over-range frequency.")
 
-#     dut._log.info("PASS: ERR status displayed after PWM signal removed.")
+@cocotb.test()
+async def test_status_lo(dut):
+    """
+    Drive a PWM frequency below the freq_counter's measurable range and
+    verify the frequency display shows 'LO' (o_status = 3'b001).
+    """
+    await setup(dut)
+
+    # Drive as fast as possible — single-cycle high, single-cycle low = 50 MHz
+    # This is above typical freq_counter range and should trigger HI status.
+    FREQ_HZ  = 900
+    DUTY_PCT = 50.0
+    PERIODS  = 10
+
+    dut._log.info(f"Driving PWM at {FREQ_HZ/1_000_000} MHz to trigger LO status")
+    await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+
+    freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en, label="freq_hi")
+
+    dut._log.info(f"freq display chars: {freq_chars}")
+
+    # Expect 'H' and 'I' somewhere in the display
+    assert 'L' in freq_chars and ('O' in freq_chars or 0 in freq_chars), \
+        f"Expected LO on freq display for out-of-range input, got: {freq_chars}"
+
+    dut._log.info("PASS: LO status displayed for over-range frequency.")
+
+
+@cocotb.test()
+async def test_pwm_removed(dut):
+    """
+    Start with a valid PWM signal, then remove it (hold i_pwm low).
+    Verify the freq display shows 'ERR' (o_status = 3'b111).
+    """
+    await setup(dut)
+
+    # First establish a valid signal
+    await drive_pwm(dut, 10_000, 50.0, 3)
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+
+    # Now remove the PWM signal
+    dut.i_pwm.value = 0
+    dut._log.info("PWM removed — holding i_pwm low.")
+
+    # Wait long enough for freq_counter to detect signal loss
+    await ClockCycles(dut.i_clk, PWM_HOLD_CYCLES)
+
+    freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en, label="freq_lo")
+
+    dut._log.info(f"freq display chars after PWM removed: {freq_chars}")
+
+    assert 'E' in freq_chars and 'R' in freq_chars and 'R' in freq_chars, \
+        f"Expected ERR on freq display after PWM removed, got: {freq_chars}"
+
+    dut._log.info("PASS: ERR status displayed after PWM signal removed.")
