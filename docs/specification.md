@@ -14,7 +14,7 @@ The measured values shall be shown on two independent multiplexed 4-digit 7-segm
 
 ## R1 — PWM Frequency Measurement
 
-The system shall measure PWM input frequencies in the range from 1 kHz to 2500 kHz.
+The system shall measure PWM input frequencies in the range from 1 kHz to 9999 kHz.
 
 [Validation](validation.md#v1--frequency-measurement)
 
@@ -38,7 +38,7 @@ The system shall display "Lo" on the frequency display if the measured PWM frequ
 
 ## R4 — High-Frequency Indication
 
-The system shall display "Hi" on the frequency display if the measured PWM frequency exceeds 2500 kHz.
+The system shall display "Hi" on the frequency display if the measured PWM frequency exceeds 9999 kHz.
 
 [Validation](validation.md#v4--high-frequency-indication)
 

@@ -113,13 +113,13 @@ assign o_freq_khz = freq[13:0];
 
 always @(*) begin
     if (watchdog_cntr == WATCHDOG_TICK - 1)
-        o_status <= 3'b111;
+        o_status = 3'b111;
     else if (freq > 9999)
-        o_status <= 3'b100;
+        o_status = 3'b100;
     else if (freq == 0)
-        o_status <= 3'b001;
+        o_status = 3'b001;
     else
-        o_status <= 3'b000;
+        o_status = 3'b000;
 end
 
 rising_edge_detect pwm_re
