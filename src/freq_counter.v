@@ -12,7 +12,7 @@ module freq_counter # (
 );
 
 reg [17:0] counter_live, counter_calc;  // 9999 < 2^17
-reg [7:0] counter_cycle;
+reg [31:0] counter_cycle;
 reg [31:0] watchdog_cntr;
 reg cntr_latch;
 wire w_pwm_re;
@@ -20,6 +20,20 @@ reg [13:0] freq;                        // 2500 < 2^12 but keeping 14 bits for i
 wire [16:0] div_result;
 wire div_busy, div_done;
 reg resolve_prev;
+
+reg [22:0] hold_counter;   // zählt bis 6.000.000 -> 23 Bit nötig (2^22 = 4.194.304 reicht nicht)
+reg [13:0] freq_held;
+
+
+reg pwm;
+
+always @(posedge i_clk or negedge i_resetn) begin
+    if (!i_resetn) begin
+        pwm <= 0;
+    end else begin
+        pwm <= i_pwm;
+    end
+end
 
 // COUNTER LOGIC (FREQ)
 
@@ -107,7 +121,30 @@ always @(posedge i_clk or negedge i_resetn) begin
         freq <= 14'h3FFF;
 end
 
-assign o_freq_khz = freq[13:0];
+// alt:
+// assign o_freq_khz = freq[13:0];
+
+// neu:
+assign o_freq_khz = freq_held;
+
+// SAMPLE & HOLD (Debug/Test): alle 6.000.000 Takte (=0.1s bei 12 MHz) den
+// aktuellen freq-Wert übernehmen und bis zum nächsten Sample konstant halten
+localparam HOLD_CYCLES = CLK_FREQ / 10;
+
+always @(posedge i_clk or negedge i_resetn) begin
+    if (!i_resetn) begin
+        hold_counter <= 0;
+        freq_held    <= 0;
+    end else begin
+        if (hold_counter == HOLD_CYCLES - 1) begin
+            hold_counter <= 0;
+            freq_held    <= freq;       // aktuellen Wert übernehmen
+        end else begin
+            hold_counter <= hold_counter + 1;
+            // freq_held bleibt unverändert -> "festgehalten"
+        end
+    end
+end
 
 // STATUS HANDLING
 
@@ -126,7 +163,7 @@ rising_edge_detect pwm_re
 (
     .clk(i_clk),
     .resetn(i_resetn),
-    .level(i_pwm),
+    .level(pwm),
     .tick(w_pwm_re)
 );
 

@@ -210,16 +210,16 @@ Covered jointly with V6 above. The digit readouts confirm correct decimal encodi
 
 | Requirement | Description | Test(s) | Status |
 |-------------|-------------|---------|--------|
-| R1 | PWM Frequency Measurement | `test_1khz_50pct`, `test_10khz_25pct`, `test_100khz_75pct` | ✅ PASS |
-| R2 | Frequency Display | `test_1khz_50pct`, `test_10khz_25pct`, `test_100khz_75pct` | ✅ PASS |
-| R3 | Low-Frequency Indication | `test_status_lo` | ✅ PASS |
-| R4 | High-Frequency Indication | `test_status_hi` | ✅ PASS |
-| R5 | Missing-Signal Detection | `test_pwm_removed` | ✅ PASS |
-| R6 | Duty Cycle Measurement | `test_1khz_50pct`, `test_10khz_25pct`, `test_100khz_75pct`, `test_dc_edge_cases` | ✅ PASS |
-| R7 | Duty Cycle Display | `test_1khz_50pct`, `test_10khz_25pct`, `test_100khz_75pct`, `test_dc_edge_cases` | ✅ PASS |
-| R8 | Multiplexed Display Control | All tests (implicit) | ✅ PASS |
+| R1 | PWM Frequency Measurement | `test_1khz_50pct`, `test_10khz_25pct`, `test_100khz_75pct` | PASS |
+| R2 | Frequency Display | `test_1khz_50pct`, `test_10khz_25pct`, `test_100khz_75pct` | PASS |
+| R3 | Low-Frequency Indication | `test_status_lo` | PASS |
+| R4 | High-Frequency Indication | `test_status_hi` | PASS |
+| R5 | Missing-Signal Detection | `test_pwm_removed` | PASS |
+| R6 | Duty Cycle Measurement | `test_1khz_50pct`, `test_10khz_25pct`, `test_100khz_75pct`, `test_dc_edge_cases` | PASS |
+| R7 | Duty Cycle Display | `test_1khz_50pct`, `test_10khz_25pct`, `test_100khz_75pct`, `test_dc_edge_cases` | PASS |
+| R8 | Multiplexed Display Control | All tests (implicit) | PASS |
 | R9 | Display Type Configuration | — | ⏳ PENDING |
-| R10 | Modular Design Structure | Design inspection | ✅ PASS |
+| R10 | Modular Design Structure | Design inspection | PASS |
 
 ---
 

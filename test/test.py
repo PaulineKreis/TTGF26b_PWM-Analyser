@@ -27,9 +27,10 @@ from cocotb.triggers import RisingEdge, FallingEdge, Timer, ClockCycles
 # Constants
 # ──────────────────────────────────────────────────────────────────────────────
 
-CLK_PERIOD_NS   = 40            # 25 MHz
-CLK_HZ          = 25_000_000
-PWM_HOLD_CYCLES = 25_000_100
+CLK_PERIOD_NS   = 20            # 25 MHz
+CLK_HZ          = 50_000_000
+PWM_HOLD_CYCLES = 50_000_100
+MS_100_WAIT     = CLK_HZ // 10
 # SevenSegmentDecoder defaults
 DIGIT_REFRESH_HZ    = 1000
 REFRESH_COUNT_MAX   = CLK_HZ // DIGIT_REFRESH_HZ   # 100 000 cycles per digit
@@ -123,7 +124,7 @@ def sample_display(digit_en, seg):
 
     digit_en bit positions: [3]=leftmost, [0]=rightmost
     """
-    inv_en = (~digit_en) & 0xF      # invert to find which digit is asserted
+    inv_en = (digit_en) & 0xF      # invert to find which digit is asserted
     if inv_en == 0:
         return None, None           # no digit enabled
     digit_idx = inv_en.bit_length() - 1  # 0=rightmost ... 3=leftmost
@@ -200,6 +201,7 @@ async def drive_pwm(dut, freq_hz: int, duty_percent: float, num_periods: int):
     high_cycles   = max(1, round(period_cycles * duty_percent / 100.0)) if duty_percent > 0 else 0
     low_cycles    = period_cycles - high_cycles
     low_cycles    = max(1, low_cycles) if duty_percent < 100.0 else 0
+    #add_wait      = MS_100_WAIT - num_periods * period_cycles
 
     assert period_cycles >= 2, \
         f"period_cycles={period_cycles} is too small for a valid PWM signal."
@@ -220,6 +222,8 @@ async def drive_pwm(dut, freq_hz: int, duty_percent: float, num_periods: int):
             dut.i_pwm.value = 0
             for _ in range(low_cycles - 1):
                 await FallingEdge(dut.i_clk)
+
+    
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Common setup
@@ -279,7 +283,7 @@ async def test_reset_behaviour(dut):
 
 #     FREQ_HZ   = 1_000
 #     DUTY_PCT  = 50.0
-#     PERIODS   = 10      # enough for both submodules to lock
+#     PERIODS   = 20      # enough for both submodules to lock
 
 #     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
 #     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
@@ -319,7 +323,7 @@ async def test_reset_behaviour(dut):
 
 #     FREQ_HZ  = 10_000
 #     DUTY_PCT = 25.0
-#     PERIODS  = 10
+#     PERIODS  = 20
 
 #     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
 #     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
@@ -347,42 +351,43 @@ async def test_reset_behaviour(dut):
 #     dut._log.info("PASS: 10 kHz, 25%")
 
 
-# @cocotb.test()
-# async def test_100khz_75pct(dut):
-#     """
-#     100 kHz PWM, 75% duty cycle.
-#     Expected:  freq display → 100 kHz, dc display → 75
-#     """
-#     await setup(dut)
+@cocotb.test()
+async def test_100khz_75pct(dut):
+    """
+    100 kHz PWM, 75% duty cycle.
+    Expected:  freq display → 100 kHz, dc display → 75
+    """
+    await setup(dut)
 
-#     FREQ_HZ  = 100_000
-#     DUTY_PCT = 75.0
-#     PERIODS  = 10
+    FREQ_HZ  = 100_000
+    DUTY_PCT = 75.0
+    PERIODS  = 30
 
-#     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
-#     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
-#     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+    dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
+    await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+    #dut._log.info("PWM driven, waiting for SAMPLE AND HOLD")
+    #await ClockCycles(dut.i_clk, MS_100_WAIT)
+    freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en, label="freq")
 
-#     freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
-#                                     dut.o_digit_en, label="freq")
+    dut.i_display_sel.value = 1
+    await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
+    dc_chars   = await read_display(dut, dut.o_seg, dut.o_dp,
+                                    dut.o_digit_en,   label="dc")
+    dut.i_display_sel.value = 0
 
-#     dut.i_display_sel.value = 1
-#     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
-#     dc_chars   = await read_display(dut, dut.o_seg, dut.o_dp,
-#                                     dut.o_digit_en,   label="dc")
-#     dut.i_display_sel.value = 0
+    freq_val = chars_to_number(freq_chars)
+    dc_val   = chars_to_number(dc_chars)
 
-#     freq_val = chars_to_number(freq_chars)
-#     dc_val   = chars_to_number(dc_chars)
+    dut._log.info(f"Decoded freq={freq_val} kHz, dc={dc_val}")
 
-#     dut._log.info(f"Decoded freq={freq_val} kHz, dc={dc_val}")
+    assert freq_val == 100, \
+        f"Expected freq=100 kHz, got {freq_val}"
+    assert dc_val == 75, \
+        f"Expected dc=75 (75%), got {dc_val}"
 
-#     assert freq_val == 100, \
-#         f"Expected freq=100 kHz, got {freq_val}"
-#     assert dc_val == 75, \
-#         f"Expected dc=75 (75%), got {dc_val}"
-
-#     dut._log.info("PASS: 100 kHz, 75%")
+    dut._log.info("PASS: 100 kHz, 75%")
 
 
 # @cocotb.test()

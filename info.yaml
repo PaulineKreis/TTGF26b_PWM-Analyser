@@ -40,20 +40,20 @@ pinout:
   ui[7]: "NC"
 
   # Outputs
-  uo[0]: "A"                #Output to LED A of the 7-Segment Display 
-  uo[1]: "B"                #Output to LED B of the 7-Segment Display
-  uo[2]: "C"                #Output to LED C of the 7-Segment Display  
+  uo[0]: "G"                #Output to LED G of the 7-Segment Display 
+  uo[1]: "F"                #Output to LED F of the 7-Segment Display
+  uo[2]: "E"                #Output to LED E of the 7-Segment Display  
   uo[3]: "D"                #Output to LED D of the 7-Segment Display
-  uo[4]: "E"                #Output to LED E of the 7-Segment Display
-  uo[5]: "F"                #Output to LED F of the 7-Segment Display
-  uo[6]: "G"                #Output to LED G of the 7-Segment Display
+  uo[4]: "C"                #Output to LED C of the 7-Segment Display
+  uo[5]: "B"                #Output to LED B of the 7-Segment Display
+  uo[6]: "A"                #Output to LED A of the 7-Segment Display
   uo[7]: "DP"               #Output to Decimal Point LED of the 7-Segment Display
 
   # Bidirectional pins
-  uio[0]: "DIGIT_EN_0"      #Output Pin for selecting which 7-Segment Display to drive
-  uio[1]: "DIGIT_EN_1"      #Output Pin for selecting which 7-Segment Display to drive
-  uio[2]: "DIGIT_EN_2"      #Output Pin for selecting which 7-Segment Display to drive
-  uio[3]: "DIGIT_EN_3"      #Output Pin for selecting which 7-Segment Display to drive
+  uio[0]: "DIGIT_EN_3"      #Output Pin for selecting which 7-Segment Display to drive
+  uio[1]: "DIGIT_EN_2"      #Output Pin for selecting which 7-Segment Display to drive
+  uio[2]: "DIGIT_EN_1"      #Output Pin for selecting which 7-Segment Display to drive
+  uio[3]: "DIGIT_EN_0"      #Output Pin for selecting which 7-Segment Display to drive
   uio[4]: "NC"
   uio[5]: "NC"
   uio[6]: "NC"

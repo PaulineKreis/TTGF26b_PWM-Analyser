@@ -1,6 +1,6 @@
 module SevenSegmentDecoder
 #(
-    parameter CLK_HZ = 25_000_000,      // input clock frequency in Hz
+    parameter CLK_HZ = 50_000_000,      // input clock frequency in Hz
     parameter DIGIT_REFRESH_HZ = 1000,  // digit switching frequency in Hz
 
     parameter COMMON_ANODE = 1  // specifies type of display that is used (common anode or cathode)
@@ -93,29 +93,8 @@ always @(*) begin   // combinational logic, therefore *
     default: digit_en_raw = 4'b0001;
     endcase
 
-    o_digit_en = COMMON_ANODE ? ~digit_en_raw : digit_en_raw;
+    o_digit_en = digit_en_raw;
 end
-
-// split input value into decimal digits
-// OLD: constant division/modulo (deep combinational path)
-// always @(posedge i_clk or negedge i_aresetn) begin
-//     if (!i_aresetn) begin
-//         digit_ones      <= 0;
-//         digit_tens      <= 0;
-//         digit_hundreds  <= 0;
-//         digit_thousands <= 0;
-//     end else begin
-//         digit_ones      <= i_value % 10;
-//         digit_tens      <= (i_value / 10) % 10;
-//         digit_hundreds  <= (i_value / 100) % 10;
-//         digit_thousands <= (i_value / 1000) % 10;
-//     end
-// end
-
-// NEW: extract decimal digits by dividing by 10 four times, using the
-// existing (verified) shift_subtract_divider. The remainder of each
-// division is the decimal digit; we compute it as dividend - quotient*10
-// so the divider module itself stays unchanged.
 
 // divider interface
 reg  [13:0] bcd_dividend;
@@ -204,45 +183,60 @@ always @(posedge i_clk or negedge i_aresetn) begin
     end
 end
 
+
 // prepare display characters
-always @(*) begin
+always @(posedge i_clk or negedge i_aresetn ) begin
 
+    if (!i_aresetn) begin
+        char0 <= 0;
+        char1 <= 0;
+        char2 <= 0;
+        char3 <= 0;
+
+    end else begin
     // default: show numeric value
-    char0 = digit_ones;
-    char1 = digit_tens;
-    char2 = digit_hundreds;
-    char3 = digit_thousands;
+        char0 <= digit_ones;
+        char1 <= digit_tens;
+        char2 <= digit_hundreds;
+        char3 <= digit_thousands;
 
-    // status overrides
-    case(i_status)
-        3'b111: // ERR
-        begin
-            char0 = CHAR_R;
-            char1 = CHAR_R;
-            char2 = CHAR_E;
-            char3 = CHAR_BLANK;
-        end
+        // status overrides
+        case(i_status)
+            3'b111: // ERR
+            begin
+                char0 <= CHAR_R;
+                char1 <= CHAR_R;
+                char2 <= CHAR_E;
+                char3 <= CHAR_BLANK;
+            end
 
-        3'b100: // HI
-        begin
-            char0 = CHAR_I;
-            char1 = CHAR_H;
-            char2 = CHAR_BLANK;
-            char3 = CHAR_BLANK;
-        end
+            3'b100: // HI
+            begin
+                char0 <= CHAR_I;
+                char1 <= CHAR_H;
+                char2 <= CHAR_BLANK;
+                char3 <= CHAR_BLANK;
+            end
 
-        3'b001: // LO
-        begin
-            char0 = CHAR_O;
-            char1 = CHAR_L;
-            char2 = CHAR_BLANK;
-            char3 = CHAR_BLANK;
-        end
+            3'b001: // LO
+            begin
+                char0 <= CHAR_O;
+                char1 <= CHAR_L;
+                char2 <= CHAR_BLANK;
+                char3 <= CHAR_BLANK;
+            end
 
-        default: // keep numeric value
-        begin
-        end
-    endcase
+            3'b010: // Duty Cycle
+            begin
+                char3 <= CHAR_BLANK;
+            end
+
+            default: // keep numeric value
+            begin
+            end
+        endcase
+
+    end
 end
 
 // select active character
