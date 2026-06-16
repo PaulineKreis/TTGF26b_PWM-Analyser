@@ -27,14 +27,14 @@ from cocotb.triggers import RisingEdge, FallingEdge, Timer, ClockCycles
 # Constants
 # ──────────────────────────────────────────────────────────────────────────────
 
-CLK_PERIOD_NS   = 20            # 25 MHz
+CLK_PERIOD_NS   = 20            # 50 MHz
 CLK_HZ          = 50_000_000
 PWM_HOLD_CYCLES = 50_000_100
-MS_100_WAIT     = CLK_HZ // 10
 # SevenSegmentDecoder defaults
 DIGIT_REFRESH_HZ    = 1000
 REFRESH_COUNT_MAX   = CLK_HZ // DIGIT_REFRESH_HZ   # 100 000 cycles per digit
 NUM_DIGITS          = 4
+WAIT_100MS_CYCLES   = CLK_HZ // 10
 
 # How many full display refresh cycles to wait before sampling outputs.
 # One full rotation = NUM_DIGITS * REFRESH_COUNT_MAX clock cycles.
@@ -147,7 +147,7 @@ async def read_display(dut, seg_signal, dp_signal, digit_en_signal, label=""):
         await RisingEdge(dut.i_clk)
         digit_en = digit_en_signal.value.integer
         seg      = seg_signal.value.integer
-        inv_en   = (~digit_en) & 0xF
+        inv_en   = (digit_en) & 0xF
         if inv_en and inv_en not in seen:
             idx = inv_en.bit_length() - 1
             chars[idx] = decode_segment(seg & 0x7F)
@@ -201,8 +201,7 @@ async def drive_pwm(dut, freq_hz: int, duty_percent: float, num_periods: int):
     high_cycles   = max(1, round(period_cycles * duty_percent / 100.0)) if duty_percent > 0 else 0
     low_cycles    = period_cycles - high_cycles
     low_cycles    = max(1, low_cycles) if duty_percent < 100.0 else 0
-    #add_wait      = MS_100_WAIT - num_periods * period_cycles
-
+    add_wait      = WAIT_100MS_CYCLES - num_periods * period_cycles
     assert period_cycles >= 2, \
         f"period_cycles={period_cycles} is too small for a valid PWM signal."
 
@@ -223,7 +222,8 @@ async def drive_pwm(dut, freq_hz: int, duty_percent: float, num_periods: int):
             for _ in range(low_cycles - 1):
                 await FallingEdge(dut.i_clk)
 
-    
+    dut._log.info("Waiting after driving PWM")
+    await ClockCycles(dut.i_clk, add_wait)
 
 # ──────────────────────────────────────────────────────────────────────────────
 # Common setup
@@ -283,7 +283,7 @@ async def test_reset_behaviour(dut):
 
 #     FREQ_HZ   = 1_000
 #     DUTY_PCT  = 50.0
-#     PERIODS   = 20      # enough for both submodules to lock
+#     PERIODS   = 10      # enough for both submodules to lock
 
 #     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
 #     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
@@ -323,7 +323,7 @@ async def test_reset_behaviour(dut):
 
 #     FREQ_HZ  = 10_000
 #     DUTY_PCT = 25.0
-#     PERIODS  = 20
+#     PERIODS  = 10
 
 #     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
 #     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
@@ -361,13 +361,12 @@ async def test_100khz_75pct(dut):
 
     FREQ_HZ  = 100_000
     DUTY_PCT = 75.0
-    PERIODS  = 30
+    PERIODS  = 10
 
     dut._log.info(f"Driving PWM: {FREQ_HZ} Hz, {DUTY_PCT}% duty")
     await drive_pwm(dut, FREQ_HZ, DUTY_PCT, PERIODS)
     await ClockCycles(dut.i_clk, DISPLAY_SETTLE_CYCLES)
-    #dut._log.info("PWM driven, waiting for SAMPLE AND HOLD")
-    #await ClockCycles(dut.i_clk, MS_100_WAIT)
+
     freq_chars = await read_display(dut, dut.o_seg, dut.o_dp,
                                     dut.o_digit_en, label="freq")
 

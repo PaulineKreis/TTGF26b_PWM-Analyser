@@ -6,7 +6,7 @@ module duty_cycle_counter # (
     input wire i_clk,
     input wire i_resetn,
 
-    output wire [6:0] o_duty_cycle
+    output reg [6:0] o_duty_cycle
 );
 
 // counters limited to 17 bits: at 1 kHz min PWM and 100 MHz clock,
@@ -86,18 +86,18 @@ shift_subtract_divider #(.WIDTH_A(24), .WIDTH_B(17)) div_inst (
     .done(div_done)
 );
 
-// always @(*) begin
-//     if (watchdog_cntr == WATCHDOG_TICK - 1) begin
-//         if (pwm)
-//             o_duty_cycle = 7'd100;
-//         else 
-//             o_duty_cycle = 7'd0;
-//     end else begin
-//         o_duty_cycle = duty_cycle_held;
-//     end
-// end
+always @(*) begin
+    if (watchdog_cntr == WATCHDOG_TICK - 1) begin
+        if (pwm)
+            o_duty_cycle = 7'd100;
+        else 
+            o_duty_cycle = 7'd0;
+    end else begin
+        o_duty_cycle = duty_cycle_held;
+    end
+end
 
-assign o_duty_cycle = (watchdog_cntr == WATCHDOG_TICK - 1) ? ((pwm) ? 7'd100 : 7'd0) : duty_cycle_held;
+//assign o_duty_cycle = (watchdog_cntr == WATCHDOG_TICK - 1) ? ((pwm) ? 7'd100 : 7'd0) : duty_cycle_held;
 
 localparam HOLD_CYCLES = CLK_FREQ / 10; //100ms wait
 

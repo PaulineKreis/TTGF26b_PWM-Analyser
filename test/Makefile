@@ -2,7 +2,7 @@
 # See https://docs.cocotb.org/en/stable/quickstart.html for more info
 
 # defaults
-SIM ?= icarus
+SIM ?= icarus #verilator
 FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
@@ -17,7 +17,7 @@ VERILOG_SOURCES += $(addprefix $(SRC_DIR)/,$(PROJECT_SOURCES))
 else
 
 # Gate level simulation:
-SIM_BUILD				= sim_build/gl
+SIM_BUILD		= sim_build/gl
 COMPILE_ARGS    += -DGL_TEST
 COMPILE_ARGS    += -DFUNCTIONAL
 COMPILE_ARGS    += -DUSE_POWER_PINS
@@ -33,10 +33,11 @@ endif
 
 # Allow sharing configuration between design and testbench via `include`:
 COMPILE_ARGS 		+= -I$(SRC_DIR)
+
 # Include the testbench sources:
 VERILOG_SOURCES += $(PWD)/tb.v
 TOPLEVEL = tb
-
+#EXTRA_ARGS += -Wno-WIDTH --trace-fst --timing
 # List test modules to run, separated by commas and without the .py suffix:
 COCOTB_TEST_MODULES = test
 
