@@ -1,5 +1,5 @@
 module freq_counter # (
-    parameter CLK_FREQ = 25_000_000,
+    parameter CLK_FREQ = 40_000_000,
     parameter RESOLVE_WAIT_CYCLE = 5,
     parameter WATCHDOG_TICK = CLK_FREQ
 ) (
