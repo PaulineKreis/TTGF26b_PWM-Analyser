@@ -9,11 +9,11 @@ module SevenSegmentDecoder
     input wire i_clk,               // clock signal
     input wire i_aresetn,           // asynchronous negated reset
     input wire [13:0] i_value,      // measured duty cycle (0 to 100) or pwm frequency (1 to 9999 kHz)
-    input wire [2:0] i_status,      // display status: 111=ERR, 100=HI, 001=LO, 010=duty mode
+    input wire [2:0] i_status,      // display status: 111=ERR, 100=HI, 001=LO, 010=duty mode, 000=freq
 
     output reg [6:0] o_seg,         // active segment pattern for current digit: MSB = a, LSB = g -> {a,b,c,d,e,f,g}
     output reg o_dp,                // decimal point
-    output reg [3:0] o_digit_en     // digit enable for multiplexing four display digits
+    output reg [3:0] o_digit_en     // active-high digit enable for multiplexing four display digits
 );
 
 // counter params
@@ -84,7 +84,7 @@ always @(posedge i_clk or negedge i_aresetn) begin
 end
 
 // digit multiplexing
-always @(*) begin   // combinational logic, therefore *
+always @(*) begin
     case(active_digit)
     2'd0: digit_en_raw = 4'b0001;
     2'd1: digit_en_raw = 4'b0010;
@@ -114,7 +114,7 @@ shift_subtract_divider #(.WIDTH_A(14), .WIDTH_B(4)) bcd_div (
     .done(bcd_div_done)
 );
 
-// remainder of the just-finished division (= decimal digit)
+// remainder = dividend mod 10 = current decimal digit (divider only outputs quotient, not remainder)
 wire [13:0] bcd_remainder = bcd_dividend - (bcd_quotient * 4'd10);
 
 // latch i_value and start a new conversion whenever it changes
@@ -226,7 +226,7 @@ always @(posedge i_clk or negedge i_aresetn ) begin
                 char3 <= CHAR_BLANK;
             end
 
-            3'b010: // Duty Cycle
+            3'b010: // duty cycle mode: suppress leading digit (max value is 100, thousands place unused)
             begin
                 char3 <= CHAR_BLANK;
             end
