@@ -29,7 +29,7 @@ from cocotb.triggers import RisingEdge, FallingEdge, Timer, ClockCycles
 # Constants
 # ──────────────────────────────────────────────────────────────────────────────
 
-CLK_HZ          = 25_000_000
+CLK_HZ          = 62_500_000
 CLK_PERIOD_NS   = 1_000_000_000 // CLK_HZ
 PWM_HOLD_CYCLES = CLK_HZ + 100
 MS_100_WAIT     = CLK_HZ // 10
