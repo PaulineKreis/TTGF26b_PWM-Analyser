@@ -11,18 +11,20 @@ module duty_cycle_counter # (
     output wire [6:0] o_duty_cycle
 );
 
-// counters limited to 17 bits: at 1 kHz min PWM and 100 MHz clock,
-// one period = 100_000 ticks < 2^17
-localparam LO_THRESHOLD = CLK_FREQ / 1000; // = 100_000, max valid tick count
+// counters capped at LO_THRESHOLD = CLK_FREQ/1000 ticks (one period at min PWM freq)
+// width derived via $clog2 so it scales automatically with CLK_FREQ
+localparam LO_THRESHOLD = CLK_FREQ / 1000;              // max valid tick count
+localparam CNTR_W    = $clog2(LO_THRESHOLD + 1);        // 15 bit @ 25 MHz
+localparam DIV_A_W   = $clog2(LO_THRESHOLD * 100 + 1);  // 22 bit @ 25 MHz
+localparam HOLD_W    = $clog2(CLK_FREQ / 10 + 1);       // 22 bit @ 25 MHz
+localparam WD_W      = $clog2(CLK_FREQ + 1);            // 25 bit @ 25 MHz
 
-// reg [31:0] counter_live_re, counter_live_fe, counter_calc_re_re, counter_calc_re_fe;
-reg [16:0] counter_live_re, counter_live_fe, counter_calc_re_re, counter_calc_re_fe;
-
+reg [CNTR_W-1:0] counter_live_re, counter_live_fe, counter_calc_re_re, counter_calc_re_fe;
 reg cntr_latch, cntr_latch_fe;
-reg [31:0] watchdog_cntr;
+reg [WD_W-1:0] watchdog_cntr;
 wire w_pwm_re, w_pwm_fe;
 
-reg [22:0] hold_counter;   // zählt bis 6.000.000 -> 23 Bit nötig (2^22 = 4.194.304 reicht nicht)
+reg [HOLD_W-1:0] hold_counter;  // counts up to CLK_FREQ/10, width derived via $clog2
 reg [13:0] duty_cycle_held;
 
 reg pwm;
@@ -55,7 +57,7 @@ always @(posedge i_clk or negedge i_resetn) begin
             cntr_latch_fe <= 1;
         end else begin
             if (cntr_latch) begin
-                // stop counting at LO_THRESHOLD so 17 bits never overflow
+                // stop counting at LO_THRESHOLD so CNTR_W-wide registers never overflow
                 if (counter_live_re < LO_THRESHOLD)
                     counter_live_re <= counter_live_re + 1;
                 if (counter_live_fe < LO_THRESHOLD)
@@ -65,8 +67,8 @@ always @(posedge i_clk or negedge i_resetn) begin
     end
 end
 
-wire [23:0] dividend = counter_calc_re_fe * 7'd100;
-wire [23:0] div_result;
+wire [DIV_A_W-1:0] dividend = counter_calc_re_fe * 7'd100;
+wire [DIV_A_W-1:0] div_result;
 wire div_busy, div_done;
 
 // generate a one-cycle start pulse from the (level) cntr_latch_fe
@@ -77,7 +79,7 @@ always @(posedge i_clk or negedge i_resetn) begin
 end
 wire start_pulse = cntr_latch_fe && !cntr_latch_fe_prev;
 
-shift_subtract_divider #(.WIDTH_A(24), .WIDTH_B(17)) div_inst (
+shift_subtract_divider #(.WIDTH_A(DIV_A_W), .WIDTH_B(CNTR_W)) div_inst (
     .clk(i_clk),
     .resetn(i_resetn),
     .start(start_pulse),
@@ -87,17 +89,6 @@ shift_subtract_divider #(.WIDTH_A(24), .WIDTH_B(17)) div_inst (
     .busy(div_busy),
     .done(div_done)
 );
-
-// always @(*) begin
-//     if (watchdog_cntr == WATCHDOG_TICK - 1) begin
-//         if (pwm)
-//             o_duty_cycle = 7'd100;
-//         else
-//             o_duty_cycle = 7'd0;
-//     end else begin
-//         o_duty_cycle = duty_cycle_held;
-//     end
-// end
 
 assign o_duty_cycle = (watchdog_cntr == WATCHDOG_TICK - 1) ? ((pwm) ? 7'd100 : 7'd0) : duty_cycle_held;
 
@@ -110,10 +101,10 @@ always @(posedge i_clk or negedge i_resetn) begin
     end else begin
         if (hold_counter == HOLD_CYCLES - 1) begin
             hold_counter <= 0;
-            duty_cycle_held <= div_result[6:0];       // aktuellen Wert übernehmen
+            duty_cycle_held <= div_result[6:0]; // latch current result
         end else begin
             hold_counter <= hold_counter + 1;
-            // freq_held bleibt unverändert -> "festgehalten"
+            // fduty_cycle_held remains unchanged -> hold display value
         end
     end
 end
