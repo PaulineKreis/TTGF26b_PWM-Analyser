@@ -1,5 +1,5 @@
 module duty_cycle_counter # (
-    parameter CLK_FREQ = 62_500_000,
+    parameter CLK_FREQ = 50_000_000,
     parameter WATCHDOG_TICK = CLK_FREQ
 
 ) (
