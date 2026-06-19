@@ -1,0 +1,23 @@
+# This file defines the mapping of the FPGA pin number to
+# signal names as used in main.v. We included here only the
+# signals that actually used by this example.
+
+set_io -nowarn i_clk  35    # input
+set_io i_aresetn 19         # input Button2 on extention board
+
+set_io i_display_sel 42     # input
+set_io i_pwm 36             # input
+
+set_io o_segA 4             # active segment pattern for current digit: {a,b,c,d,e,f,g}
+set_io o_segB 2
+set_io o_segC 47
+set_io o_segD 45
+set_io o_segE 3
+set_io o_segF 48
+set_io o_segG 46
+set_io o_dp 44              # decimal point
+
+set_io o_digit_en_0 43      # digit enable
+set_io o_digit_en_1 38
+set_io o_digit_en_2 34
+set_io o_digit_en_3 31
