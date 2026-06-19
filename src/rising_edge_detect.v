@@ -46,4 +46,3 @@ module rising_edge_detect
 `endif
 
 endmodule
-
