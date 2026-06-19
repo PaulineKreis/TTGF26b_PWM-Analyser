@@ -11,22 +11,30 @@ module freq_counter # (
     output reg [2:0] o_status
 );
 
-reg [17:0] counter_live, counter_calc;  // 9999 < 2^17
-reg [31:0] counter_cycle;
-reg [31:0] watchdog_cntr;
+localparam CLK_FREQ_KHZ = CLK_FREQ / 1000;
+localparam HI_THRESHOLD = CLK_FREQ_KHZ / (9999 + 1);    // min tick count per period at 9999 kHz max PWM frequency
+localparam LO_THRESHOLD = CLK_FREQ_KHZ;                 // max tick count per period at 1 kHz minimum PWM frequency
+localparam CNTR_W  = $clog2(LO_THRESHOLD + 1);          // 15 bit @ 25 MHz
+localparam CYCLE_W = $clog2(RESOLVE_WAIT_CYCLE + 1);    // 3 bit
+localparam WD_W    = $clog2(WATCHDOG_TICK + 1);         // 25 bit @ 25 MHz
+localparam HOLD_W  = $clog2(CLK_FREQ / 10 + 1);         // 22 bit @ 25 MHz
+localparam DIV_W   = $clog2(CLK_FREQ_KHZ + 1);          // 15 bit @ 25 MHz
+
 reg cntr_latch;
 wire w_pwm_re;
-reg [13:0] freq;                        // 2500 < 2^12 but keeping 14 bits for interface consistency
-wire [16:0] div_result;
+reg [13:0] freq;    // max value possible on 4-digit display: 9999 < 2^14
+reg [13:0] freq_held;
 wire div_busy, div_done;
 reg resolve_prev;
-
-reg [22:0] hold_counter;   // zählt bis 6.000.000 -> 23 Bit nötig (2^22 = 4.194.304 reicht nicht)
-reg [13:0] freq_held;
-
-
 reg pwm;
 
+reg [CNTR_W-1:0]  counter_live, counter_calc;  // capped at LO_THRESHOLD, width scales with CLK_FREQ
+reg [CYCLE_W-1:0] counter_cycle;               // counts up to RESOLVE_WAIT_CYCLE
+reg [WD_W-1:0]    watchdog_cntr;               // counts up to WATCHDOG_TICK, width scales with CLK_FREQ
+reg [HOLD_W-1:0]  hold_counter;                // counts up to CLK_FREQ/10, width derived via $clog2
+wire [DIV_W-1:0]  div_result;
+
+// input synchroniser: single flip-flop stage to avoid metastability on i_pwm
 always @(posedge i_clk or negedge i_resetn) begin
     if (!i_resetn) begin
         pwm <= 0;
@@ -36,8 +44,6 @@ always @(posedge i_clk or negedge i_resetn) begin
 end
 
 // COUNTER LOGIC (FREQ)
-
-localparam LO_THRESHOLD = CLK_FREQ / 1000; // calculation for under 1 kHz does not need to be precise
 
 always @(posedge i_clk or negedge i_resetn) begin
     if (!i_resetn) begin
@@ -87,11 +93,6 @@ always @(posedge i_clk or negedge i_resetn) begin
     end
 end
 
-// REGISTERED OUTPUT CALCULATION
-
-localparam CLK_FREQ_KHZ = CLK_FREQ / 1000;
-localparam HI_THRESHOLD = CLK_FREQ_KHZ / (9999 + 1); // compile time constant (= 4 for 10 MHz)
-
 // pulse generation: start_pulse is high for exactly one clock
 // when counter_cycle first reaches RESOLVE_WAIT_CYCLE
 wire resolve_now = (counter_cycle == RESOLVE_WAIT_CYCLE);
@@ -103,12 +104,12 @@ end
 
 wire start_pulse = resolve_now && !resolve_prev;
 
-shift_subtract_divider #(.WIDTH_A(17), .WIDTH_B(17)) div_inst (
+shift_subtract_divider #(.WIDTH_A(DIV_W), .WIDTH_B(CNTR_W)) div_inst (
     .clk(i_clk),
     .resetn(i_resetn),
     .start(start_pulse && counter_calc > HI_THRESHOLD),
-    .dividend(CLK_FREQ_KHZ[16:0]),
-    .divisor(counter_calc[16:0]),
+    .dividend(CLK_FREQ_KHZ[DIV_W-1:0]),
+    .divisor(counter_calc[CNTR_W-1:0]),
     .quotient(div_result),
     .busy(div_busy),
     .done(div_done)
@@ -118,17 +119,13 @@ always @(posedge i_clk or negedge i_resetn) begin
     if (!i_resetn) freq <= 0;
     else if (div_done) freq <= div_result;
     else if (start_pulse && counter_calc <= HI_THRESHOLD)
-        freq <= 14'h3FFF;
+        freq <= 14'h3FFF;   // // signal HI: PWM frequency above measurable range (> 9999 kHz)
 end
 
-// alt:
-// assign o_freq_khz = freq[13:0];
-
-// neu:
+// output is held for HOLD_CYCLES ticks to ensure stable display readability
 assign o_freq_khz = freq_held;
 
-// SAMPLE & HOLD (Debug/Test): alle 6.000.000 Takte (=0.1s bei 12 MHz) den
-// aktuellen freq-Wert übernehmen und bis zum nächsten Sample konstant halten
+// SAMPLE & HOLD: latch freq every HOLD_CYCLES ticks (= 100 ms at default CLK_FREQ)
 localparam HOLD_CYCLES = CLK_FREQ / 10;
 
 always @(posedge i_clk or negedge i_resetn) begin
@@ -138,10 +135,10 @@ always @(posedge i_clk or negedge i_resetn) begin
     end else begin
         if (hold_counter == HOLD_CYCLES - 1) begin
             hold_counter <= 0;
-            freq_held    <= freq;       // aktuellen Wert übernehmen
+            freq_held    <= freq;       // latch current result
         end else begin
             hold_counter <= hold_counter + 1;
-            // freq_held bleibt unverändert -> "festgehalten"
+            // freq_held remains unchanged -> hold display value
         end
     end
 end
