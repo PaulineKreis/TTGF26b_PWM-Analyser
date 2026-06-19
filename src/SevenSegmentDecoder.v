@@ -1,6 +1,6 @@
 module SevenSegmentDecoder
 #(
-    parameter CLK_HZ = 50_000_000,      // input clock frequency in Hz
+    parameter CLK_HZ = 25_000_000,      // input clock frequency in Hz
     parameter DIGIT_REFRESH_HZ = 1000,  // digit switching frequency in Hz
 
     parameter COMMON_ANODE = 1  // specifies type of display that is used (common anode or cathode)
@@ -11,7 +11,7 @@ module SevenSegmentDecoder
     input wire [13:0] i_value,      // measured duty cycle (0 to 100) or pwm frequency (1 to 9999 kHz)
     input wire [2:0] i_status,      // display status: 111=ERR, 100=HI, 001=LO, 010=duty mode
 
-    output reg [6:0] o_seg,         // active segment pattern for current digit: {a,b,c,d,e,f,g}
+    output reg [6:0] o_seg,         // active segment pattern for current digit: MSB = a, LSB = g -> {a,b,c,d,e,f,g}
     output reg o_dp,                // decimal point
     output reg [3:0] o_digit_en     // digit enable for multiplexing four display digits
 );

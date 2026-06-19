@@ -1,16 +1,16 @@
 module PWM_Analyser (
-    input wire i_clk,
-    input wire i_pwm,
-    input wire i_aresetn,
-    input wire i_display_sel,        // 0 = frequency, 1 = duty cycle
-    output wire [6:0] o_seg,         // active segment pattern for current digit: {a,b,c,d,e,f,g}
-    output wire o_dp,                // decimal point
-    output wire [3:0] o_digit_en     // digit enable for multiplexing four display digits
+    input wire i_clk,               // system clock
+    input wire i_pwm,               // PWM input signal (synchronised internally)
+    input wire i_aresetn,           // active-low asynchronous reset
+    input wire i_display_sel,       // 0 = frequency, 1 = duty cycle
+    output wire [6:0] o_seg,        // active segment pattern for current digit: MSB = a, LSB = g -> {a,b,c,d,e,f,g}
+    output wire o_dp,               // decimal point
+    output wire [3:0] o_digit_en    // digit enable for multiplexing four display digits
 );
 
-    wire [13:0] w_freq_khz;
+    wire [13:0] w_freq_khz;     // max value possible on 4-digit display: 9999 < 2^14
     wire [2:0] w_status_fc;
-    wire [6:0] w_duty_cycle;
+    wire [6:0] w_duty_cycle;    // max value possible: 100(%) < 2^7
 
     freq_counter fc(
         .i_pwm(i_pwm),
