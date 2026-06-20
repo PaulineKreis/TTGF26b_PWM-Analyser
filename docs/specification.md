@@ -70,7 +70,7 @@ The system shall display the measured duty cycle value on a dedicated 4-digit 7-
 
 ## R8 — Multiplexed Display Control
 
-The system shall control both 4-digit 7-segment displays using time-multiplexed digit activation.
+The system shall control the 4-digit 7-segment displays using time-multiplexed digit activation.
 
 [Validation](validation.md#v8--multiplexed-display-control)
 
